@@ -23,7 +23,7 @@
 
   "dependencies": {
     "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview1-002702",
-    "NUnit.Portable.Agent": "3.3.0-CI-2668-PR-1517"
+    "NUnit.Portable.Agent": "3.3.0-CI-2675-PR-1517"
   },
 
   "frameworks": {
@@ -38,11 +38,13 @@
         "Microsoft.NETCore.App": {
           "type": "platform",
           "version": "1.0.0-rc2-3002702"
-        }
+        },
+        "System.ObjectModel": "4.0.12-rc2-24027"
       }
     },
     "net451": {
       "frameworkAssemblies": {
+        "System.ObjectModel": "",
         "System.Threading.Tasks": ""
       }
     }
