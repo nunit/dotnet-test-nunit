@@ -47,6 +47,16 @@ namespace NUnit.Runner
 
         #region Properties
 
+        // .Net Core runner options http://dotnet.github.io/docs/core-concepts/core-sdk/cli/dotnet-test-protocol.html
+        public bool DesignTime { get; private set; }
+
+        public int Port { get; private set; } = -1;
+        public bool PortSpecified => Port >= 0;
+
+        public bool WaitCommand { get; private set; }
+
+        public bool List { get; private set; }
+
         // Action to Perform
 
         public bool Explore { get; private set; }
@@ -57,30 +67,31 @@ namespace NUnit.Runner
 
         // Select tests
 
-        private List<string> inputFiles = new List<string>();
-        public IList<string> InputFiles { get { return inputFiles; } }
+        public IList<string> InputFiles { get; } = new List<string>();
 
-        private List<string> testList = new List<string>();
-        public IList<string> TestList { get { return testList; } }
+        public IList<string> TestList { get; } = new List<string>();
 
         public string WhereClause { get; private set; }
-        public bool WhereClauseSpecified { get { return WhereClause != null; } }
+        public bool WhereClauseSpecified => WhereClause != null;
 
-        private int defaultTimeout = -1;
-        public int DefaultTimeout { get { return defaultTimeout; } }
-        public bool DefaultTimeoutSpecified { get { return defaultTimeout >= 0; } }
+        public int DefaultTimeout { get; private set; } = -1;
+        public bool DefaultTimeoutSpecified => DefaultTimeout >= 0;
 
-        private int randomSeed = -1;
-        public int RandomSeed { get { return randomSeed; } }
-        public bool RandomSeedSpecified { get { return randomSeed >= 0; } }
+        public int RandomSeed { get; private set; } = -1;
+        public bool RandomSeedSpecified => RandomSeed >= 0;
 
-        private int numWorkers = -1;
-        public int NumberOfTestWorkers { get { return numWorkers; } }
-        public bool NumberOfTestWorkersSpecified { get { return numWorkers >= 0; } }
+#if false
+        public int NumberOfTestWorkers { get; private set; } = -1;
+        public bool NumberOfTestWorkersSpecified => NumberOfTestWorkers >= 0;
+#endif
 
         public bool StopOnError { get; private set; }
 
         public bool WaitBeforeExit { get; private set; }
+
+#if NET451
+        public bool Debug { get; private set; }
+#endif
 
         // Output Control
 
@@ -91,22 +102,20 @@ namespace NUnit.Runner
         public bool Verbose { get; private set; }
 
         public string OutFile { get; private set; }
-        public bool OutFileSpecified { get { return OutFile != null; } }
+        public bool OutFileSpecified => OutFile != null;
 
         public string ErrFile { get; private set; }
-        public bool ErrFileSpecified { get { return ErrFile != null; } }
+        public bool ErrFileSpecified => ErrFile != null;
 
         public string DisplayTestLabels { get; private set; }
 
-        private string workDirectory = null;
-        public string WorkDirectory
-        {
-            get { return workDirectory ?? NUnit.Env.DefaultWorkDirectory; }
-        }
-        public bool WorkDirectorySpecified { get { return workDirectory != null; } }
+        string workDirectory = null;
+        public string WorkDirectory => workDirectory ?? NUnit.Env.DefaultWorkDirectory;
+
+        public bool WorkDirectorySpecified => workDirectory != null;
 
         public string InternalTraceLevel { get; private set; }
-        public bool InternalTraceLevelSpecified { get { return InternalTraceLevel != null; } }
+        public bool InternalTraceLevelSpecified => InternalTraceLevel != null;
 
         /// <summary>Indicates whether a full report should be displayed.</summary>
         public bool Full { get; private set; }
@@ -126,37 +135,33 @@ namespace NUnit.Runner
             }
         }
 
-        private List<OutputSpecification> exploreOutputSpecifications = new List<OutputSpecification>();
-        public IList<OutputSpecification> ExploreOutputSpecifications { get { return exploreOutputSpecifications; } }
+        public IList<OutputSpecification> ExploreOutputSpecifications { get; private set; } = new List<OutputSpecification>();
 
         // Error Processing
 
-        public List<string> errorMessages = new List<string>();
-        public IList<string> ErrorMessages { get { return errorMessages; } }
+        public IList<string> ErrorMessages { get; private set; } = new List<string>();
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         public bool Validate()
         {
             if (!validated)
             {
                 CheckOptionCombinations();
-
                 validated = true;
             }
-
             return ErrorMessages.Count == 0;
         }
 
-        #endregion
+#endregion
 
-        #region Helper Methods
+#region Helper Methods
 
-        protected virtual void CheckOptionCombinations()
+        void CheckOptionCombinations()
         {
-
+            // TODO: Fill in any validations
         }
 
         /// <summary>
@@ -230,10 +235,10 @@ namespace NUnit.Runner
                 v => WhereClause = RequiredValue(v, "--where"));
 
             this.Add("timeout=", "Set timeout for each test case in {MILLISECONDS}.",
-                v => defaultTimeout = RequiredInt(v, "--timeout"));
+                v => DefaultTimeout = RequiredInt(v, "--timeout"));
 
             this.Add("seed=", "Set the random {SEED} used to generate test cases.",
-                v => randomSeed = RequiredInt(v, "--seed"));
+                v => RandomSeed = RequiredInt(v, "--seed"));
 #if false
             this.Add("workers=", "Specify the {NUMBER} of worker threads to be used in running tests. If not specified, defaults to 2 or the number of processors, whichever is greater.",
                 v => numWorkers = RequiredInt(v, "--workers"));
@@ -291,6 +296,24 @@ namespace NUnit.Runner
             this.Add("version|V", "Display the header and exit.",
                 v => ShowVersion = v != null);
 
+#if NET451
+            this.Add("debug", "Attaches the debugger on launch",
+                v => Debug = v != null);
+#endif
+
+            // .NET Core runner options
+            this.Add("designtime", "Used to indicate that the runner is being launched by an IDE",
+                v => DesignTime = v != null);
+
+            this.Add("port=", "Used by IDEs to specify a port number to listen for a connection",
+                v => Port = RequiredInt(v, "--port"));
+
+            this.Add("wait-command", "Used by IDEs to indicate that the runner should connect to the port and wait for commands, instead of going ahead and executing the tests",
+                v => WaitCommand = v != null);
+
+            this.Add("list", "Used by IDEs to request a list of tests that can be run",
+                v => List = v != null);
+
             // Default
             this.Add("<>", v =>
             {
@@ -301,6 +324,6 @@ namespace NUnit.Runner
             });
         }
 
-        #endregion
+#endregion
     }
 }

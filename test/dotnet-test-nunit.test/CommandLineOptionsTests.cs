@@ -21,12 +21,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using NUnit.Common;
 using NUnit.Framework;
 using NUnit.Options;
@@ -51,6 +46,12 @@ namespace NUnit.Runner.Test
         [TestCase("StopOnError", "stoponerror")]
         [TestCase("WaitBeforeExit", "wait")]
         [TestCase("NoHeader", "noheader|noh")]
+        [TestCase("DesignTime", "designtime")]
+        [TestCase("WaitCommand", "wait-command")]
+        [TestCase("List", "list")]
+#if NET451
+        [TestCase("Debug", "debug")]
+#endif
         public void CanRecognizeBooleanOptions(string propertyName, string pattern)
         {
             string[] prototypes = pattern.Split('|');
@@ -135,6 +136,7 @@ namespace NUnit.Runner.Test
 
         [TestCase("DefaultTimeout", "timeout")]
         [TestCase("RandomSeed", "seed")]
+        [TestCase("Port", "port")]
         //[TestCase("NumberOfTestWorkers", "workers")]
         public void CanRecognizeIntOptions(string propertyName, string pattern)
         {
@@ -156,6 +158,7 @@ namespace NUnit.Runner.Test
         [TestCase("--err")]
         [TestCase("--work")]
         [TestCase("--trace")]
+        [TestCase("--port")]
         public void MissingValuesAreReported(string option)
         {
             CommandLineOptions options = new CommandLineOptions(option + "=");
