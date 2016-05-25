@@ -1,4 +1,5 @@
 ﻿{
+  "copyright": "Copyright (C) 2016 Charlie Poole",
   "authors": [ "Rob Prouse" ],
   "title": "NUnit .NET Core Runner",
   "description": "NUnit console and Visual Studio runner for .NET Core and .NET 4.5.1+",
@@ -43,6 +44,7 @@
   },
 
   "dependencies": {
-    "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview1-002702"
+    "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview1-002702",
+    "NUnit.Portable.Agent": "3.3.0-CI-2668-PR-1517"
   }
 }
