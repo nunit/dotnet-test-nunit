@@ -24,14 +24,13 @@
 using Microsoft.Extensions.Testing.Abstractions;
 using NUnit.Framework;
 using NUnit.Runner.Sinks;
-using MsTest = Microsoft.Extensions.Testing.Abstractions.Test;
 
 namespace NUnit.Runner.Test.Sinks
 {
     [TestFixture]
-    public class RemoteTestDiscoverySinkTests : BaseSinkTests
+    public class RemoteTestSinkTests : BaseSinkTests
     {
-        ITestDiscoverySink _testSink;
+        ITestSink _testSink;
 
         [SetUp]
         public override void SetUp()
@@ -41,20 +40,21 @@ namespace NUnit.Runner.Test.Sinks
         }
 
         [Test]
-        public void SendTestFound()
+        public void SendTestCompleted()
         {
-            var test = CreateMockTest();
-            _testSink.SendTestFound(test);
+            _testSink.SendTestCompleted();
             var message = GetMessage();
             Assert.That(message, Is.Not.Null);
-            Assert.That(message.MessageType, Is.EqualTo(Messages.TestFound));
-            AssertAreEqual(test, GetPayload<MsTest>(message));
+            Assert.That(message.MessageType, Is.EqualTo(Messages.TestCompleted));
         }
 
         [Test]
-        public void SendTestFoundThrowsWithNullTest()
+        public void SendWaitingCommand()
         {
-            Assert.That(() => _testSink.SendTestFound(null), Throws.ArgumentNullException);
+            _testSink.SendWaitingCommand();
+            var message = GetMessage();
+            Assert.That(message, Is.Not.Null);
+            Assert.That(message.MessageType, Is.EqualTo(Messages.WaitingCommand));
         }
     }
 }

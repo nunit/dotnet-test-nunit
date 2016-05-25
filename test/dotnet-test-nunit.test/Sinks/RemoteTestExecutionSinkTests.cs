@@ -25,36 +25,53 @@ using Microsoft.Extensions.Testing.Abstractions;
 using NUnit.Framework;
 using NUnit.Runner.Sinks;
 using MsTest = Microsoft.Extensions.Testing.Abstractions.Test;
+using MsTestResult = Microsoft.Extensions.Testing.Abstractions.TestResult;
 
 namespace NUnit.Runner.Test.Sinks
 {
-    [TestFixture]
-    public class RemoteTestDiscoverySinkTests : BaseSinkTests
+    public class RemoteTestExecutionSinkTests : BaseSinkTests
     {
-        ITestDiscoverySink _testSink;
+        ITestExecutionSink _testSink;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _testSink = new RemoteTestDiscoverySink(BinaryWriter);
+            _testSink = new RemoteTestExecutionSink(BinaryWriter);
         }
 
         [Test]
-        public void SendTestFound()
+        public void SendTestStarted()
         {
             var test = CreateMockTest();
-            _testSink.SendTestFound(test);
+            _testSink.SendTestStarted(test);
             var message = GetMessage();
             Assert.That(message, Is.Not.Null);
-            Assert.That(message.MessageType, Is.EqualTo(Messages.TestFound));
+            Assert.That(message.MessageType, Is.EqualTo(Messages.TestStarted));
             AssertAreEqual(test, GetPayload<MsTest>(message));
         }
 
         [Test]
-        public void SendTestFoundThrowsWithNullTest()
+        public void SendTestStartedThrowsWithNullTest()
         {
-            Assert.That(() => _testSink.SendTestFound(null), Throws.ArgumentNullException);
+            Assert.That(() => _testSink.SendTestStarted(null), Throws.ArgumentNullException);
+        }
+
+        [Test]
+        public void SendTestResult()
+        {
+            var testResult = CreateMockTestResult();
+            _testSink.SendTestResult(testResult);
+            var message = GetMessage();
+            Assert.That(message, Is.Not.Null);
+            Assert.That(message.MessageType, Is.EqualTo(Messages.TestResult));
+            AssertAreEqual(testResult, GetPayload<MsTestResult>(message));
+        }
+
+        [Test]
+        public void SendTestResultThrowsWithNullTestResult()
+        {
+            Assert.That(() => _testSink.SendTestResult(null), Throws.ArgumentNullException);
         }
     }
 }
