@@ -1,0 +1,36 @@
+﻿{
+  "copyright": "Copyright (C) 2016 Charlie Poole",
+  "authors": [ "Rob Prouse" ],
+  "title": "NUnit .NET Core Runner Test Runner",
+  "name": "dotnet-test-nunit.test.runner",
+  "version": "3.3.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "preserveCompilationContext": true,
+    "warningsAsErrors": true
+  },
+
+  "dependencies": {
+    "NUnitLite": "3.2.0",
+    "dotnet-test-nunit": "3.3.0",
+    "dotnet-test-nunit.test": "3.3.0"
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": [
+        "dnxcore50",
+        "dotnet",
+        "portable-dnxcore50+net45+win8+wp8+wpa81",
+        "portable-net45+win8"
+      ],
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0-rc2-3002702"
+        }
+      }
+    },
+    "net451": { }
+  }
+}

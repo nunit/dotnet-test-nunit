@@ -21,6 +21,11 @@
     }
   },
 
+  "dependencies": {
+    "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview1-002702",
+    "NUnit.Portable.Agent": "3.3.0-CI-2668-PR-1517"
+  },
+
   "frameworks": {
     "netcoreapp1.0": {
       "imports": [
@@ -41,10 +46,5 @@
         "System.Threading.Tasks": ""
       }
     }
-  },
-
-  "dependencies": {
-    "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview1-002702",
-    "NUnit.Portable.Agent": "3.3.0-CI-2668-PR-1517"
   }
 }

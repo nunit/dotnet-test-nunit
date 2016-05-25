@@ -21,12 +21,22 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-namespace NUnit.Runner
+using System;
+using System.Reflection;
+using NUnit.Common;
+using NUnit.Runner.Test.Sinks;
+using NUnitLite;
+
+namespace NUnit.Runner.Test.Runner
 {
     public class Program
     {
-        public static void Main(string[] args)
+        // TODO: Once dotnet-test-nunit is capable of testing itself, remove this test runner
+        public static int Main(string[] args)
         {
+            var result = new AutoRun(typeof(RemoteTestDiscoverySinkTests).GetTypeInfo().Assembly)
+                    .Execute(args, new ExtendedTextWrapper(Console.Out), Console.In);
+            return result;
         }
     }
 }

@@ -16,6 +16,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "dotnet-test-nunit", "src\dotnet-test-nunit\dotnet-test-nunit.xproj", "{7FC6DCED-278A-449B-8BB0-95346410C8D2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{93336E7C-25F0-4327-84EA-B190EA537709}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "dotnet-test-nunit.test", "test\dotnet-test-nunit.test\dotnet-test-nunit.test.xproj", "{B3C98A50-D42F-4197-968B-0E25591E83C3}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "dotnet-test-nunit.test.runner", "test\dotnet-test-nunit.test.runner\dotnet-test-nunit.test.runner.xproj", "{F2025265-8A4E-46DD-AE91-537E302B3F24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,11 +32,21 @@ Global
 		{7FC6DCED-278A-449B-8BB0-95346410C8D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FC6DCED-278A-449B-8BB0-95346410C8D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FC6DCED-278A-449B-8BB0-95346410C8D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3C98A50-D42F-4197-968B-0E25591E83C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3C98A50-D42F-4197-968B-0E25591E83C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3C98A50-D42F-4197-968B-0E25591E83C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3C98A50-D42F-4197-968B-0E25591E83C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2025265-8A4E-46DD-AE91-537E302B3F24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2025265-8A4E-46DD-AE91-537E302B3F24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2025265-8A4E-46DD-AE91-537E302B3F24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2025265-8A4E-46DD-AE91-537E302B3F24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7FC6DCED-278A-449B-8BB0-95346410C8D2} = {F0FC9C69-996D-43E7-B8A0-35A9311E2B36}
+		{B3C98A50-D42F-4197-968B-0E25591E83C3} = {93336E7C-25F0-4327-84EA-B190EA537709}
+		{F2025265-8A4E-46DD-AE91-537E302B3F24} = {93336E7C-25F0-4327-84EA-B190EA537709}
 	EndGlobalSection
 EndGlobal

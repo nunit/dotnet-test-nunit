@@ -24,38 +24,57 @@
 using System.IO;
 using Microsoft.Extensions.Testing.Abstractions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+using NUnit.Runner.Sinks;
 
-namespace NUnit.Runner.Sinks
+namespace NUnit.Runner.Test.Sinks
 {
-    public class RemoteTestSink : ITestSink
+    [TestFixture]
+    public class RemoteTestDiscoverySinkTests
     {
-        protected BinaryWriter BinaryWriter { get; }
+        MemoryStream _stream;
+        BinaryWriter _writer;
+        ITestDiscoverySink _testSink;
 
-        protected RemoteTestSink(BinaryWriter binaryWriter)
+        [SetUp]
+        public void SetUp()
         {
-            BinaryWriter = binaryWriter;
+            _stream = new MemoryStream();
+            _writer = new BinaryWriter(_stream);
+            _testSink = new RemoteTestDiscoverySink(_writer);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            _writer.Dispose();
+            _stream.Dispose();
+        }
+
+        [Test]
         public void SendTestCompleted()
         {
-            SendMessage(Messages.TestCompleted);
+            _testSink.SendTestCompleted();
+            var result = GetMessage();
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.MessageType, Is.EqualTo(Messages.TestCompleted));
         }
 
+        [Test]
         public void SendWaitingCommand()
         {
-            SendMessage(Messages.WaitingCommand);
+            _testSink.SendWaitingCommand();
+            var result = GetMessage();
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.MessageType, Is.EqualTo(Messages.WaitingCommand));
         }
 
-        protected void SendMessage(string messageType, object payload = null)
+        protected Message GetMessage()
         {
-            var msg = new Message
-            {
-                MessageType = messageType,
-                Payload = payload != null ? JToken.FromObject(payload) : null
-            };
-            var json = JsonConvert.SerializeObject(msg);
-            BinaryWriter.Write(json);
+            _stream.Position = 0;
+            var reader = new BinaryReader(_stream);
+            var json = reader.ReadString();
+            return JsonConvert.DeserializeObject<Message>(json);
         }
     }
 }

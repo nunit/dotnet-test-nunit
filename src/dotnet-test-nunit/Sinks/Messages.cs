@@ -29,7 +29,7 @@ namespace NUnit.Runner.Sinks
     public static class Messages
     {
         // ITestSink
-        public const string TestComplete   = "TestRunner.TestCompleted";
+        public const string TestCompleted   = "TestRunner.TestCompleted";
         public const string WaitingCommand = "TestRunner.WaitingCommand";
 
         // ITestDiscoverySink

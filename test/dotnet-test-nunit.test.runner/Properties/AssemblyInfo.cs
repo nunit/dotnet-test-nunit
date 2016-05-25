@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("NUnit Software")]
-[assembly: AssemblyProduct("dotnet_test_nunit")]
+[assembly: AssemblyProduct("dotnet_test_nunit.test.runner")]
 [assembly: AssemblyCopyright("Copyright (C) 2016 Charlie Poole")]
 [assembly: AssemblyTrademark("NUnit is a trademark of NUnit Software")]
 

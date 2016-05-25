@@ -21,12 +21,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-namespace NUnit.Runner
+namespace NUnit.Runner.Extensions
 {
-    public class Program
+    /// <summary>
+    /// Converts between the Microsoft.Testing.Abstractions classes and the
+    /// equivilent NUnit classes
+    /// </summary>
+    public static class TestExtensions
     {
-        public static void Main(string[] args)
-        {
-        }
     }
 }
