@@ -1,0 +1,19 @@
+version: 3.3.0.{build}
+os: Visual Studio 2015
+
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '3.3.0.{build}'
+  assembly_file_version: '3.3.0.{build}'
+
+before_build:
+  - ps: .\scripts\show-dotnet-info.ps1
+  - cmd: dotnet --info
+  - cmd: dotnet restore
+
+build_script:
+  - cmd: dotnet build test\dotnet-test-nunit.test.runner\
+
+test:
+  - cmd: dotnet run -p test\dotnet-test-nunit.test.runner\
