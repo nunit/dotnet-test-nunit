@@ -1,0 +1,48 @@
+﻿{
+  "authors": [ "Rob Prouse" ],
+  "title": "NUnit .NET Core Runner",
+  "description": "NUnit console and Visual Studio runner for .NET Core and .NET 4.5.1+",
+  "name": "dotnet-test-nunit",
+  "version": "3.3.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "preserveCompilationContext": true,
+    "warningsAsErrors": true
+  },
+  "packOptions": {
+    "requireLicenseAcceptance": false,
+    "tags": [ "testing", "tdd", "dnx", "nunit" ],
+    "iconUrl": "",
+    "licenseUrl": "https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/LICENSE",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/nunit/dotnet-test-nunit"
+    }
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": [
+        "dnxcore50",
+        "dotnet",
+        "portable-dnxcore50+net45+win8+wp8+wpa81",
+        "portable-net45+win8"
+      ],
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0-rc2-3002702"
+        }
+      }
+    },
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Threading.Tasks": ""
+      }
+    }
+  },
+
+  "dependencies": {
+    "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview1-002702"
+  }
+}
