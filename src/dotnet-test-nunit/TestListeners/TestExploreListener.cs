@@ -22,6 +22,7 @@
 // ***********************************************************************
 
 using System;
+using System.Xml.Linq;
 using Microsoft.Extensions.Testing.Abstractions;
 
 namespace NUnit.Runner.TestListeners
@@ -38,7 +39,21 @@ namespace NUnit.Runner.TestListeners
 
         public override void OnTestEvent(string xml)
         {
-            throw new NotImplementedException();
+            var element = XElement.Parse(xml);
+            var tests = element.Descendants("test-case");
+            foreach(var test in tests)
+            {
+                OnTestCaseFound(test);
+            }
+        }
+
+        void OnTestCaseFound(XElement testCase)
+        {
+            var test = ParseTest(testCase);
+            if(Options.DesignTime)
+                _sink.SendTestFound(test);
+            else
+                Console.WriteLine(test.FullyQualifiedName);
         }
     }
 }

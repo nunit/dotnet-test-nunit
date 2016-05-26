@@ -189,7 +189,9 @@ namespace NUnit.Runner
                 if (_options.List)
                 {
                     ITestListener listener = new TestExploreListener(_testDiscoverySink, _options, assemblyPath);
-                    //driver.Explore(listener.OnTestEvent, filter.Text);
+                    string xml = driver.Explore(filter.Text);
+                    listener.OnTestEvent(xml);
+                    summary.AddResult(xml);
                 }
                 else
                 {
@@ -198,23 +200,27 @@ namespace NUnit.Runner
                     summary.AddResult(xml);
                 }
             }
-            var reporter = new ResultReporter(summary, ColorConsole, _options);
+
+            if (_options.List)
+            {
+                if (_options.DesignTime)
+                    _testDiscoverySink.SendTestCompleted();
+
+                return ReturnCodes.OK;
+            }
 
             if (_options.DesignTime)
             {
-                if (_options.List)
-                    _testDiscoverySink.SendTestCompleted();
-                else
-                    _testExecutionSink.SendTestCompleted();
+                _testExecutionSink.SendTestCompleted();
+                return ReturnCodes.OK;
             }
-            else
-            {
-                // Summarize and save test results
-                reporter.ReportResults();
 
-                // TODO: Save out the TestResult.xml
-                var testResult = reporter.TestResults;
-            }
+            // Summarize and save test results
+            var reporter = new ResultReporter(summary, ColorConsole, _options);
+            reporter.ReportResults();
+
+            // TODO: Save out the TestResult.xml
+            var testResult = reporter.TestResults;
 
             // Return the number of test failures
             return summary.FailedCount;
@@ -290,6 +296,16 @@ namespace NUnit.Runner
                 builder.SelectWhere(_options.WhereClause);
 
             return builder.GetFilter();
+        }
+
+        int Explore()
+        {
+            return ReturnCodes.OK;
+        }
+
+        int RunTests()
+        {
+            return ReturnCodes.OK;
         }
 
         #endregion
