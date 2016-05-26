@@ -33,6 +33,10 @@ using System.IO;
 using Newtonsoft.Json;
 using NUnit.Runner.Sinks;
 using System.Collections.Generic;
+using NUnit.Engine;
+using System.Xml.Linq;
+using NUnit.Runner.Interfaces;
+using NUnit.Runner.TestListeners;
 
 namespace NUnit.Runner
 {
@@ -70,6 +74,11 @@ namespace NUnit.Runner
                 return ReturnCodes.INVALID_ARG;
             }
 
+#if NET451
+            if (_options.Debug)
+                Debugger.Launch();
+#endif
+
             if (_options.ShowVersion || !_options.NoHeader)
                 WriteHeader();
 
@@ -100,14 +109,12 @@ namespace NUnit.Runner
                 return ReturnCodes.OK;
             }
 
-#if NET451
-            if (_options.Debug)
-                Debugger.Launch();
-#endif
-
             try
             {
                 IList<string> testList;
+
+                // TODO: Add in test settings
+                var settings = new Dictionary<string, object>();
 
                 if (_options.PortSpecified)
                 {
@@ -133,7 +140,43 @@ namespace NUnit.Runner
                     SetupConsoleTestSinks();
                 }
 
-                // TODO: Run or explore tests
+                // TODO: Apply filters and merge with testList
+                var filter = "<filter />";
+
+                // Load the test framework
+                foreach(var assembly in _options.InputFiles)
+                {
+                    // TODO: Load async
+                    var assemblyPath = System.IO.Path.GetFullPath(assembly);
+                    var testAssembly = LoadAssembly(assemblyPath);
+                    var frameworkPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(assemblyPath), "nunit.framework.dll");
+                    var framework = LoadAssembly(frameworkPath);
+
+                    var driver = new NUnitPortableDriver();
+                    var result = driver.Load(framework, testAssembly, settings);
+
+                    // TODO: Run async
+                    // Explore or Run
+                    if (_options.List)
+                    {
+                        ITestListener listener = new TestExploreListener(_testDiscoverySink, _options, assemblyPath);
+                        //driver.Explore(listener.OnTestEvent, filter);
+                    }
+                    else
+                    {
+                        ITestListener listener = new TestExecutionListener(_testExecutionSink, _options, assemblyPath);
+                        string xml = driver.Run(listener.OnTestEvent, filter);
+                        // TODO: Summarize and save test results
+                    }
+                }
+
+                if(_options.DesignTime)
+                {
+                    if (_options.List)
+                        _testDiscoverySink.SendTestCompleted();
+                    else
+                        _testExecutionSink.SendTestCompleted();
+                }
             }
             //catch (NUnitEngineException ex)
             //{
@@ -178,6 +221,16 @@ namespace NUnit.Runner
         public void Dispose()
         {
             _socket?.Dispose();
+        }
+
+        public Assembly LoadAssembly(string filename)
+        {
+#if NET451
+            return Assembly.LoadFrom(filename);
+#else
+            var assemblyName = System.IO.Path.GetFileNameWithoutExtension(filename);
+            return Assembly.Load(new AssemblyName(assemblyName));
+#endif
         }
 
         void SetupRemoteTestSinks(Stream stream)

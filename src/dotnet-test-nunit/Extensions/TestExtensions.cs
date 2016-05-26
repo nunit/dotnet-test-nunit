@@ -21,13 +21,79 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
+using System;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Xml.Linq;
+using Microsoft.Extensions.Testing.Abstractions;
+
 namespace NUnit.Runner.Extensions
 {
     /// <summary>
     /// Converts between the Microsoft.Testing.Abstractions classes and the
-    /// equivilent NUnit classes
+    /// equivilent NUnit xml
     /// </summary>
     public static class TestExtensions
     {
+        static SHA1 SHA { get; } = SHA1.Create();
+
+        /// <summary>
+        /// Takes an NUnit id attribute and converts it to a Guid Id
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
+        public static Guid ConvertToGuid(this XAttribute attribute)
+        {
+            if (attribute == null)
+                return Guid.Empty;
+
+            var hash = SHA.ComputeHash(Encoding.UTF8.GetBytes(attribute.Value));
+            var guid = new byte[16];
+            Array.Copy(hash, guid, 16);
+            return new Guid(guid);
+        }
+
+        public static DateTime ConvertToDateTime(this XAttribute attribute)
+        {
+            var result = DateTime.UtcNow;
+
+            if (attribute != null)
+                DateTime.TryParse(attribute.Value, out result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts an NUnit XML duration in seconds into a TimeSpan
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
+        public static TimeSpan ConvertToTimeSpan(this XAttribute attribute)
+        {
+            double duration = 0.01; // Some runners cannot handle a duration of 0
+
+            if(attribute != null)
+                double.TryParse(attribute.Value, out duration);
+
+            return TimeSpan.FromSeconds(duration);
+        }
+
+        public static TestOutcome ConvertToTestOutcome(this XAttribute attribute)
+        {
+            if (attribute == null)
+                return TestOutcome.None;
+
+            if(attribute.Value.StartsWith("Passed", StringComparison.Ordinal))
+                return TestOutcome.Passed;
+            if (attribute.Value.StartsWith("Failed", StringComparison.Ordinal))
+                return TestOutcome.Failed;
+            if (attribute.Value.StartsWith("Skipped", StringComparison.Ordinal))
+                return TestOutcome.Skipped;
+            if (attribute.Value.StartsWith("Inconclusive", StringComparison.Ordinal))
+                return TestOutcome.Skipped;
+
+            return TestOutcome.None;
+        }
     }
 }
