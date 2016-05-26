@@ -298,16 +298,6 @@ namespace NUnit.Runner
             return builder.GetFilter();
         }
 
-        int Explore()
-        {
-            return ReturnCodes.OK;
-        }
-
-        int RunTests()
-        {
-            return ReturnCodes.OK;
-        }
-
         #endregion
 
         #region Test Sinks
@@ -339,7 +329,6 @@ namespace NUnit.Runner
             {
                 SetupConsoleTestSinks();
             }
-
             return testList;
         }
 
@@ -441,10 +430,8 @@ namespace NUnit.Runner
         void DisplayRuntimeEnvironment()
         {
             ColorConsole.WriteLine(ColorStyle.SectionHeader, "Runtime Environment");
-            ColorConsole.WriteLabelLine("        OS Name: ", RuntimeEnvironment.OperatingSystem);
-            ColorConsole.WriteLabelLine("     OS Version: ", RuntimeEnvironment.OperatingSystemVersion);
             ColorConsole.WriteLabelLine("    OS Platform: ", RuntimeEnvironment.OperatingSystemPlatform);
-            ColorConsole.WriteLabelLine("   Architecture: ", RuntimeEnvironment.RuntimeArchitecture);
+            ColorConsole.WriteLabelLine("     OS Version: ", RuntimeEnvironment.OperatingSystemVersion);
             ColorConsole.WriteLabelLine("        Runtime: ", RuntimeEnvironment.GetRuntimeIdentifier());
             ColorConsole.WriteLine();
         }

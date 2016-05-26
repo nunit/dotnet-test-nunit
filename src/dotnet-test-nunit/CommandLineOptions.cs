@@ -57,6 +57,8 @@ namespace NUnit.Runner
 
         public bool List { get; private set; }
 
+        public int ParentProcessId { get; private set; }
+
         // Action to Perform
 
         public bool Explore { get; private set; }
@@ -143,7 +145,7 @@ namespace NUnit.Runner
 
 #endregion
 
-#region Public Methods
+        #region Public Methods
 
         public bool Validate()
         {
@@ -155,9 +157,9 @@ namespace NUnit.Runner
             return ErrorMessages.Count == 0;
         }
 
-#endregion
+        #endregion
 
-#region Helper Methods
+        #region Helper Methods
 
         void CheckOptionCombinations()
         {
@@ -314,6 +316,9 @@ namespace NUnit.Runner
             this.Add("list", "Used by IDEs to request a list of tests that can be run",
                 v => List = v != null);
 
+            this.Add("parentProcessId", "Used by IDEs to indicate the Parent PID",
+                v => ParentProcessId = RequiredInt(v, "--parentProcessId"));
+
             // Default
             this.Add("<>", v =>
             {
@@ -324,6 +329,6 @@ namespace NUnit.Runner
             });
         }
 
-#endregion
+        #endregion
     }
 }
