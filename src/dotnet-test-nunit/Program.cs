@@ -37,6 +37,9 @@ using NUnit.Engine;
 using System.Xml.Linq;
 using NUnit.Runner.Interfaces;
 using NUnit.Runner.TestListeners;
+using System.Linq;
+using Microsoft.DotNet.InternalAbstractions;
+using NUnit.Common;
 
 namespace NUnit.Runner
 {
@@ -111,72 +114,7 @@ namespace NUnit.Runner
 
             try
             {
-                IList<string> testList;
-
-                // TODO: Add in test settings
-                var settings = new Dictionary<string, object>();
-
-                if (_options.PortSpecified)
-                {
-                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    _socket.Connect(new IPEndPoint(IPAddress.Loopback, _options.Port));
-                    var networkStream = new NetworkStream(_socket);
-
-                    SetupRemoteTestSinks(networkStream);
-
-                    if (_options.WaitCommand)
-                    {
-                        var reader = new BinaryReader(networkStream);
-                        _testExecutionSink.SendWaitingCommand();
-
-                        var rawMessage = reader.ReadString();
-                        var message = JsonConvert.DeserializeObject<Message>(rawMessage);
-
-                        testList = message.Payload.ToObject<RunTestsMessage>().Tests;
-                    }
-                }
-                else
-                {
-                    SetupConsoleTestSinks();
-                }
-
-                // TODO: Apply filters and merge with testList
-                var filter = "<filter />";
-
-                // Load the test framework
-                foreach(var assembly in _options.InputFiles)
-                {
-                    // TODO: Load async
-                    var assemblyPath = System.IO.Path.GetFullPath(assembly);
-                    var testAssembly = LoadAssembly(assemblyPath);
-                    var frameworkPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(assemblyPath), "nunit.framework.dll");
-                    var framework = LoadAssembly(frameworkPath);
-
-                    var driver = new NUnitPortableDriver();
-                    var result = driver.Load(framework, testAssembly, settings);
-
-                    // TODO: Run async
-                    // Explore or Run
-                    if (_options.List)
-                    {
-                        ITestListener listener = new TestExploreListener(_testDiscoverySink, _options, assemblyPath);
-                        //driver.Explore(listener.OnTestEvent, filter);
-                    }
-                    else
-                    {
-                        ITestListener listener = new TestExecutionListener(_testExecutionSink, _options, assemblyPath);
-                        string xml = driver.Run(listener.OnTestEvent, filter);
-                        // TODO: Summarize and save test results
-                    }
-                }
-
-                if(_options.DesignTime)
-                {
-                    if (_options.List)
-                        _testDiscoverySink.SendTestCompleted();
-                    else
-                        _testExecutionSink.SendTestCompleted();
-                }
+                return Execute();
             }
             //catch (NUnitEngineException ex)
             //{
@@ -214,8 +152,72 @@ namespace NUnit.Runner
                     }
                 }
             }
+        }
 
-            return ReturnCodes.OK;
+        int Execute()
+        {
+            DisplayRuntimeEnvironment();
+
+            DisplayTestFiles();
+
+            IEnumerable<string> testList = SetupSinks();
+            IDictionary<string, object> settings = GetTestSettings();
+
+            // We display the filters at this point so  that any exception message
+            // thrown by CreateTestFilter will be understandable.
+            DisplayTestFilters();
+
+            // Apply filters and merge with testList
+            var filter = CreateTestFilter(testList);
+
+            var summary = new ResultSummary();
+
+            // Load the test framework
+            foreach (var assembly in _options.InputFiles)
+            {
+                // TODO: Load async
+                var assemblyPath = System.IO.Path.GetFullPath(assembly);
+                var testAssembly = LoadAssembly(assemblyPath);
+                var frameworkPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(assemblyPath), "nunit.framework.dll");
+                var framework = LoadAssembly(frameworkPath);
+
+                var driver = new NUnitPortableDriver();
+                var result = driver.Load(framework, testAssembly, settings);
+
+                // TODO: Run async
+                // Explore or Run
+                if (_options.List)
+                {
+                    ITestListener listener = new TestExploreListener(_testDiscoverySink, _options, assemblyPath);
+                    //driver.Explore(listener.OnTestEvent, filter.Text);
+                }
+                else
+                {
+                    ITestListener listener = new TestExecutionListener(_testExecutionSink, _options, assemblyPath);
+                    string xml = driver.Run(listener.OnTestEvent, filter.Text);
+                    summary.AddResult(xml);
+                }
+            }
+            var reporter = new ResultReporter(summary, ColorConsole, _options);
+
+            if (_options.DesignTime)
+            {
+                if (_options.List)
+                    _testDiscoverySink.SendTestCompleted();
+                else
+                    _testExecutionSink.SendTestCompleted();
+            }
+            else
+            {
+                // Summarize and save test results
+                reporter.ReportResults();
+
+                // TODO: Save out the TestResult.xml
+                var testResult = reporter.TestResults;
+            }
+
+            // Return the number of test failures
+            return summary.FailedCount;
         }
 
         public void Dispose()
@@ -223,7 +225,9 @@ namespace NUnit.Runner
             _socket?.Dispose();
         }
 
-        public Assembly LoadAssembly(string filename)
+        #region Helper Methods
+
+        Assembly LoadAssembly(string filename)
         {
 #if NET451
             return Assembly.LoadFrom(filename);
@@ -231,6 +235,96 @@ namespace NUnit.Runner
             var assemblyName = System.IO.Path.GetFileNameWithoutExtension(filename);
             return Assembly.Load(new AssemblyName(assemblyName));
 #endif
+        }
+
+        IDictionary<string, object> GetTestSettings()
+        {
+            IDictionary<string, object> settings = new Dictionary<string, object>();
+
+            if (_options.DefaultTimeout >= 0)
+                settings.Add(PackageSettings.DefaultTimeout, _options.DefaultTimeout);
+
+            if (_options.InternalTraceLevelSpecified)
+                settings.Add(PackageSettings.InternalTraceLevel, _options.InternalTraceLevel);
+
+            // Always add work directory, in case current directory is changed
+            var workDirectory = _options.WorkDirectory ?? Directory.GetCurrentDirectory();
+            settings.Add(PackageSettings.WorkDirectory, workDirectory);
+
+            if (_options.StopOnError)
+                settings.Add(PackageSettings.StopOnError, true);
+
+#if false
+            if (options.NumberOfTestWorkersSpecified)
+                package.Add(PackageSettings.NumberOfTestWorkers, options.NumberOfTestWorkers);
+#endif
+
+            if (_options.RandomSeedSpecified)
+                settings.Add(PackageSettings.RandomSeed, _options.RandomSeed);
+
+#if NET451
+            if (_options.Debug)
+            {
+                settings.Add(PackageSettings.DebugTests, true);
+#if false
+                if (!options.NumberOfTestWorkersSpecified)
+                    package.Add(PackageSettings.NumberOfTestWorkers, 0);
+#endif
+            }
+#endif
+
+            return settings;
+        }
+
+        TestFilter CreateTestFilter(IEnumerable<string> testList)
+        {
+            ITestFilterBuilder builder = new TestFilterBuilder();
+
+            foreach (string testName in testList)
+                builder.AddTest(testName);
+
+            foreach (string testName in _options.TestList)
+                builder.AddTest(testName);
+
+            if (_options.WhereClauseSpecified)
+                builder.SelectWhere(_options.WhereClause);
+
+            return builder.GetFilter();
+        }
+
+        #endregion
+
+        #region Test Sinks
+
+        IEnumerable<string> SetupSinks()
+        {
+            IEnumerable<string> testList = Enumerable.Empty<string>();
+
+            if (_options.PortSpecified)
+            {
+                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _socket.Connect(new IPEndPoint(IPAddress.Loopback, _options.Port));
+                var networkStream = new NetworkStream(_socket);
+
+                SetupRemoteTestSinks(networkStream);
+
+                if (_options.WaitCommand)
+                {
+                    var reader = new BinaryReader(networkStream);
+                    _testExecutionSink.SendWaitingCommand();
+
+                    var rawMessage = reader.ReadString();
+                    var message = JsonConvert.DeserializeObject<Message>(rawMessage);
+
+                    testList = message.Payload.ToObject<RunTestsMessage>().Tests;
+                }
+            }
+            else
+            {
+                SetupConsoleTestSinks();
+            }
+
+            return testList;
         }
 
         void SetupRemoteTestSinks(Stream stream)
@@ -244,6 +338,10 @@ namespace NUnit.Runner
             _testDiscoverySink = new StreamingTestDiscoverySink(Console.OpenStandardOutput());
             _testExecutionSink = new StreamingTestExecutionSink(Console.OpenStandardOutput());
         }
+
+        #endregion
+
+        #region Console Output
 
         void WriteHeader()
         {
@@ -268,11 +366,11 @@ namespace NUnit.Runner
                 string configuration = ((AssemblyConfigurationAttribute)attrs[0]).Configuration;
                 if (!String.IsNullOrEmpty(configuration))
                 {
-                    configText = string.Format("({0})", ((AssemblyConfigurationAttribute)attrs[0]).Configuration);
+                    configText = $"({((AssemblyConfigurationAttribute)attrs[0]).Configuration})";
                 }
             }
 
-            ColorConsole.WriteLine(ColorStyle.Header, string.Format("{0} {1} {2}", programName, versionText, configText));
+            ColorConsole.WriteLine(ColorStyle.Header, $"{programName} {versionText} {configText}");
             ColorConsole.WriteLine(ColorStyle.SubHeader, copyrightText);
             ColorConsole.WriteLine();
         }
@@ -323,5 +421,43 @@ namespace NUnit.Runner
                 ColorConsole.WriteLine();
             }
         }
+
+        void DisplayRuntimeEnvironment()
+        {
+            ColorConsole.WriteLine(ColorStyle.SectionHeader, "Runtime Environment");
+            ColorConsole.WriteLabelLine("        OS Name: ", RuntimeEnvironment.OperatingSystem);
+            ColorConsole.WriteLabelLine("     OS Version: ", RuntimeEnvironment.OperatingSystemVersion);
+            ColorConsole.WriteLabelLine("    OS Platform: ", RuntimeEnvironment.OperatingSystemPlatform);
+            ColorConsole.WriteLabelLine("   Architecture: ", RuntimeEnvironment.RuntimeArchitecture);
+            ColorConsole.WriteLabelLine("        Runtime: ", RuntimeEnvironment.GetRuntimeIdentifier());
+            ColorConsole.WriteLine();
+        }
+
+        void DisplayTestFiles()
+        {
+            ColorConsole.WriteLine(ColorStyle.SectionHeader, "Test Files");
+            foreach (string file in _options.InputFiles)
+                ColorConsole.WriteLine(ColorStyle.Default, "    " + file);
+            ColorConsole.WriteLine();
+        }
+
+        void DisplayTestFilters()
+        {
+            if (_options.TestList.Count > 0 || _options.WhereClauseSpecified)
+            {
+                ColorConsole.WriteLine(ColorStyle.SectionHeader, "Test Filters");
+
+                if (_options.TestList.Count > 0)
+                    foreach (string testName in _options.TestList)
+                        ColorConsole.WriteLabelLine("    Test: ", testName);
+
+                if (_options.WhereClauseSpecified)
+                    ColorConsole.WriteLabelLine("    Where: ", _options.WhereClause.Trim());
+
+                ColorConsole.WriteLine();
+            }
+        }
+
+        #endregion
     }
 }

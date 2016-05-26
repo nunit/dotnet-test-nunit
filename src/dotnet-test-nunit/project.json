@@ -23,7 +23,7 @@
 
   "dependencies": {
     "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview1-002702",
-    "NUnit.Portable.Agent": "3.3.0-CI-2675-PR-1517"
+    "NUnit.Portable.Agent": "3.3.0-CI-2701-PR-1517"
   },
 
   "frameworks": {
@@ -45,7 +45,8 @@
     "net451": {
       "frameworkAssemblies": {
         "System.ObjectModel": "",
-        "System.Threading.Tasks": ""
+        "System.Threading.Tasks": "",
+        "System.Xml.XDocument": ""
       }
     }
   }

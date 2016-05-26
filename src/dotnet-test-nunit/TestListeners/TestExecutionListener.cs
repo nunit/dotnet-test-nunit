@@ -21,6 +21,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
+using System;
 using System.Xml.Linq;
 using Microsoft.Extensions.Testing.Abstractions;
 using NUnit.Runner.Extensions;
@@ -81,8 +82,8 @@ namespace NUnit.Runner.TestListeners
                 StartTime = xml.Attribute("start-time").ConvertToDateTime(),
                 EndTime = xml.Attribute("end-time").ConvertToDateTime(),
                 Duration = xml.Attribute("duration").ConvertToTimeSpan(),
-                Outcome = xml.Attribute("result").ConvertToTestOutcome()
-                // TODO: ComputerName
+                Outcome = xml.Attribute("result").ConvertToTestOutcome(),
+                ComputerName = Environment.MachineName
             };
             // TODO: Messages and stack traces
             return testResult;
