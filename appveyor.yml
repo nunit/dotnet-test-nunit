@@ -1,19 +1,25 @@
 version: 3.3.0.{build}
 os: Visual Studio 2015
+configuration: Release
 
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
-  assembly_version: '3.3.0.{build}'
-  assembly_file_version: '3.3.0.{build}'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
 
 before_build:
   - ps: .\scripts\show-dotnet-info.ps1
+  - ps: .\scripts\set-version.ps1
   - cmd: dotnet --info
   - cmd: dotnet restore
 
 build_script:
-  - cmd: dotnet build test\dotnet-test-nunit.test.runner\
-  - cmd: dotnet run -p test\dotnet-test-nunit.test.runner\
+  - cmd: dotnet build -c Release test\dotnet-test-nunit.test.runner\
+  - cmd: dotnet run -c Release -p test\dotnet-test-nunit.test.runner\
+  - cmd: dotnet pack -c Release src\dotnet-test-nunit\
 
 test: off
+
+artifacts:
+  path: 'src\dotnet-test-nunit\bin\Release\*.nupkg'
