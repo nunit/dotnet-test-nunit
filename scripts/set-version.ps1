@@ -1,12 +1,12 @@
 $ReleaseVersionNumber = $env:APPVEYOR_BUILD_VERSION
 $PreReleaseName = ''
 
-if($env:APPVEYOR_REPO_BRANCH -ne 'master') {
-  if($env:APPVEYOR_PULL_REQUEST_NUMBER -ne '') {
-    $PreReleaseName = '-PR' + $env:APPVEYOR_PULL_REQUEST_NUMBER
-  } else {
-    $PreReleaseName = '-BR-' + $env:APPVEYOR_REPO_BRANCH
-  }
+If($env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null) {
+  $PreReleaseName = '-PR-' + $env:APPVEYOR_PULL_REQUEST_NUMBER
+} ElseIf($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+  $PreReleaseName = '-' + $env:APPVEYOR_REPO_BRANCH
+} Else {
+  $PreReleaseName = '-CI-' + $env:APPVEYOR_BUILD_NUMBER
 }
 
 $PSScriptFilePath = (Get-Item $MyInvocation.MyCommand.Path).FullName
