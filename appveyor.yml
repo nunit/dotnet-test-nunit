@@ -15,11 +15,11 @@ before_build:
   - cmd: dotnet restore
 
 build_script:
-  - cmd: dotnet build test\dotnet-test-nunit.test.runner\
-  - cmd: dotnet run -p test\dotnet-test-nunit.test.runner\
-  - cmd: dotnet pack src\dotnet-test-nunit\
+  - cmd: dotnet build -c Release test\dotnet-test-nunit.test.runner\
+  - cmd: dotnet run -c Release -p test\dotnet-test-nunit.test.runner\
+  - cmd: dotnet pack -c Release src\dotnet-test-nunit\
 
 test: off
 
 artifacts:
-  path: 'src\dotnet-test-nunit\bin\$(configuration)\*.nupkg'
+  path: 'src\dotnet-test-nunit\bin\Release\*.nupkg'
