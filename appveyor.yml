@@ -10,7 +10,7 @@ assembly_info:
 
 before_build:
   - ps: .\scripts\show-dotnet-info.ps1
-  - ps: .\scripts\set-version.ps1 -ReleaseVersionNumber '{version}' -PreReleaseName ''
+  - ps: .\scripts\set-version.ps1 -ReleaseVersionNumber '3.3.0.{build}' -PreReleaseName ''
   - cmd: dotnet --info
   - cmd: dotnet restore
 
