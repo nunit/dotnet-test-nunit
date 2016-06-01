@@ -1,13 +1,13 @@
-param (
-	[Parameter(Mandatory=$true)]
-	[ValidatePattern("^\d+\.\d+\.(?:\d+\.\d+$|\d+$)")]
-	[string]
-	$ReleaseVersionNumber,
-	[Parameter(Mandatory=$true)]
-	[string]
-	[AllowEmptyString()]
-	$PreReleaseName
-)
+$ReleaseVersionNumber = $env:APPVEYOR_BUILD_VERSION
+$PreReleaseName = ''
+
+if($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+  if($env:APPVEYOR_PULL_REQUEST_NUMBER -ne '') {
+    $PreReleaseName = '-PR' + $env:APPVEYOR_PULL_REQUEST_NUMBER
+  } else {
+    $PreReleaseName = '-BR-' + $env:APPVEYOR_REPO_BRANCH
+  }
+}
 
 $PSScriptFilePath = (Get-Item $MyInvocation.MyCommand.Path).FullName
 $ScriptDir = Split-Path -Path $PSScriptFilePath -Parent
