@@ -1,5 +1,3 @@
-# Taken from https://github.com/Shazwazza/Smidge/ by Shannon Deminick
-
 param (
 	[Parameter(Mandatory=$true)]
 	[ValidatePattern("^\d+\.\d+\.(?:\d+\.\d+$|\d+$)")]
