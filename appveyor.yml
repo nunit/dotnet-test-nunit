@@ -1,5 +1,6 @@
 version: 3.3.0.{build}
 os: Visual Studio 2015
+configuration: Release
 
 assembly_info:
   patch: true
@@ -9,11 +10,16 @@ assembly_info:
 
 before_build:
   - ps: .\scripts\show-dotnet-info.ps1
+  - ps: .\scripts\set-version.ps1 -ReleaseVersionNumber '{version}' -PreReleaseName ''
   - cmd: dotnet --info
   - cmd: dotnet restore
 
 build_script:
   - cmd: dotnet build test\dotnet-test-nunit.test.runner\
   - cmd: dotnet run -p test\dotnet-test-nunit.test.runner\
+  - cmd: dotnet pack src\dotnet-test-nunit\
 
 test: off
+
+artifacts:
+  path: 'src\dotnet-test-nunit\bin\$(configuration)\*.nupkg'
