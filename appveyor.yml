@@ -5,12 +5,12 @@ configuration: Release
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
-  assembly_version: '3.3.0.{build}'
-  assembly_file_version: '3.3.0.{build}'
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
 
 before_build:
   - ps: .\scripts\show-dotnet-info.ps1
-  - ps: .\scripts\set-version.ps1 -ReleaseVersionNumber '3.3.0.{build}' -PreReleaseName ''
+  - ps: .\scripts\set-version.ps1 -ReleaseVersionNumber "{version}" -PreReleaseName ''
   - cmd: dotnet --info
   - cmd: dotnet restore
 
