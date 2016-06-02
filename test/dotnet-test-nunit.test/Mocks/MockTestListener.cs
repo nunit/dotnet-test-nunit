@@ -21,46 +21,29 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
+using System;
 using System.Xml.Linq;
-using Microsoft.Extensions.Testing.Abstractions;
-using NUnit.Runner.Extensions;
-using NUnit.Runner.Interfaces;
+using MsTest = Microsoft.Extensions.Testing.Abstractions.Test;
+using NUnit.Runner.TestListeners;
 
-namespace NUnit.Runner.TestListeners
+namespace NUnit.Runner.Test.Mocks
 {
-    public abstract class BaseTestListener : ITestListener
+    public class MockTestListener : BaseTestListener
     {
-        readonly string _codepath;
-
-        protected CommandLineOptions Options { get; }
-
-        public BaseTestListener(CommandLineOptions options, string codepath)
+        public MockTestListener() : base(new CommandLineOptions(), @"\src")
         {
-            Options = options;
-            _codepath = codepath;
         }
 
-        public abstract void OnTestEvent(string xml);
-
-        protected Test ParseTest(XElement xml)
+        public override void OnTestEvent(string xml)
         {
-            var test = new Test
-            {
-                Id = xml.Attribute("id").ConvertToGuid(),
-                DisplayName = xml.Attribute("name")?.Value ?? "",
-                FullyQualifiedName = xml.Attribute("fullname")?.Value ?? "",
-                CodeFilePath = _codepath
-                // TODO: LineNumber
-            };
-            // Add properties
-            var properties = xml.Descendants("property");
-            foreach(var property in properties)
-            {
-                var name = property.Attribute("name")?.Value ?? "";
-                var value = property.Attribute("value")?.Value ?? "";
-                test.Properties.Add(name, value);
-            }
-            return test;
+            throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Exposes ParseTest for testing
+        /// </summary>
+        /// <param name="xml"></param>
+        /// <returns></returns>
+        public MsTest TestParseTest(XElement xml) => ParseTest(xml);
     }
 }
