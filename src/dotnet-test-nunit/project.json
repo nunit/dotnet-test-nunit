@@ -13,7 +13,7 @@
   "packOptions": {
     "requireLicenseAcceptance": false,
     "tags": [ "testing", "tdd", "dnx", "nunit" ],
-    "iconUrl": "",
+    "iconUrl": "https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/nunit_256.png",
     "licenseUrl": "https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/LICENSE",
     "repository": {
       "type": "git",
@@ -30,8 +30,6 @@
     "netcoreapp1.0": {
       "imports": [
         "dnxcore50",
-        "dotnet",
-        "portable-dnxcore50+net45+win8+wp8+wpa81",
         "portable-net45+win8"
       ],
       "dependencies": {

@@ -20,8 +20,6 @@
     "netcoreapp1.0": {
       "imports": [
         "dnxcore50",
-        "dotnet",
-        "portable-dnxcore50+net45+win8+wp8+wpa81",
         "portable-net45+win8"
       ],
       "dependencies": {
