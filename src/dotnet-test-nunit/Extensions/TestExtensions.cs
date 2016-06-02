@@ -22,6 +22,7 @@
 // ***********************************************************************
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -36,6 +37,8 @@ namespace NUnit.Runner.Extensions
     /// </summary>
     public static class TestExtensions
     {
+        const double MIN_DURATION = 0.001d;
+
         static SHA1 SHA { get; } = SHA1.Create();
 
         /// <summary>
@@ -59,7 +62,7 @@ namespace NUnit.Runner.Extensions
             var result = DateTime.UtcNow;
 
             if (attribute != null)
-                DateTime.TryParse(attribute.Value, out result);
+                DateTime.TryParse(attribute.Value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out result);
 
             return result;
         }
@@ -71,12 +74,12 @@ namespace NUnit.Runner.Extensions
         /// <returns></returns>
         public static TimeSpan ConvertToTimeSpan(this XAttribute attribute)
         {
-            double duration = 0.01; // Some runners cannot handle a duration of 0
+            double duration = MIN_DURATION; // Some runners cannot handle a duration of 0
 
             if(attribute != null)
                 double.TryParse(attribute.Value, out duration);
 
-            return TimeSpan.FromSeconds(duration);
+            return TimeSpan.FromSeconds(Math.Max(duration, MIN_DURATION));
         }
 
         public static TestOutcome ConvertToTestOutcome(this XAttribute attribute)
