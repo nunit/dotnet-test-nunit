@@ -22,6 +22,7 @@
 // ***********************************************************************
 
 using System;
+using System.IO;
 
 namespace NUnit
 {
@@ -31,14 +32,21 @@ namespace NUnit
     /// </summary>
     public class Env
     {
+        static Env()
+        {
+#if NETSTANDARDAPP1_5 || NETCOREAPP1_0
+            string drive = Environment.GetEnvironmentVariable("HOMEDRIVE");
+            string path = Environment.GetEnvironmentVariable("HOMEPATH");
+            DocumentFolder = Path.Combine(drive, path, "documents");
+#else
+            DocumentFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+#endif
+        }
+
         /// <summary>
         /// Path to the 'My Documents' folder
         /// </summary>
-#if NETSTANDARDAPP1_5 || NETCOREAPP1_0
-        public static string DocumentFolder = @"\My Documents";
-#else
-        public static string DocumentFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-#endif
+        public static string DocumentFolder;
         /// <summary>
         /// Directory used for file output if not specified on commandline.
         /// </summary>
