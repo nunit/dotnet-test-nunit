@@ -1,4 +1,4 @@
-﻿{
+{
   "copyright": "Copyright (C) 2016 Charlie Poole",
   "authors": [ "Rob Prouse" ],
   "title": "NUnit .NET Core Runner",
@@ -23,7 +23,7 @@
 
   "dependencies": {
     "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview1-002702",
-    "NUnit.Portable.Agent": "3.3.0-CI-2701-PR-1517"
+    "NUnit.Portable.Agent": "3.3.0-CI-2746-master"
   },
 
   "frameworks": {
@@ -41,11 +41,11 @@
       }
     },
     "net451": {
-      "frameworkAssemblies": {
-        "System.ObjectModel": "",
-        "System.Threading.Tasks": "",
-        "System.Xml.XDocument": ""
-      }
+        "frameworkAssemblies": {
+            "System.ObjectModel": "",
+            "System.Threading.Tasks": "",
+            "System.Xml.XDocument": ""
+        }
     }
   }
 }
