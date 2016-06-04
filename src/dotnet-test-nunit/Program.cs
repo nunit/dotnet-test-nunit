@@ -222,6 +222,15 @@ namespace NUnit.Runner
             // TODO: Save out the TestResult.xml
             var testResult = reporter.TestResults;
 
+            if (summary.UnexpectedError)
+                return ReturnCodes.UNEXPECTED_ERROR;
+
+            if (summary.InvalidAssemblies > 0)
+                return ReturnCodes.INVALID_ASSEMBLY;
+
+            if (summary.InvalidTestFixtures > 0)
+                return ReturnCodes.INVALID_TEST_FIXTURE;
+
             // Return the number of test failures
             return summary.FailedCount;
         }
