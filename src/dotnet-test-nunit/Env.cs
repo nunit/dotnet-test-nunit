@@ -52,7 +52,7 @@ namespace NUnit.Runner
                 if (profile != null)
                     DocumentFolder = Path.Combine(profile, "documents");
             }
-            DefaultWorkDirectory = DocumentFolder;
+            DefaultWorkDirectory = Directory.GetCurrentDirectory();
 #else
             DocumentFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             DefaultWorkDirectory = Environment.CurrentDirectory;
