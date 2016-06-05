@@ -24,7 +24,7 @@
 using System;
 using System.IO;
 
-namespace NUnit
+namespace NUnit.Runner
 {
     /// <summary>
     /// Env is a static class that provides some of the features of
@@ -34,12 +34,28 @@ namespace NUnit
     {
         static Env()
         {
-#if NETSTANDARDAPP1_5 || NETCOREAPP1_0
+#if NETSTANDARD1_5 || NETCOREAPP1_0
+            DocumentFolder = ".";
             string drive = Environment.GetEnvironmentVariable("HOMEDRIVE");
             string path = Environment.GetEnvironmentVariable("HOMEPATH");
-            DocumentFolder = Path.Combine(drive, path, "documents");
+            if (drive != null && path != null)
+            {
+                DocumentFolder = Path.Combine(drive, path, "documents");
+            }
+            else if (path != null)
+            {
+                DocumentFolder = Path.Combine(path, "documents");
+            }
+            else
+            {
+                string profile = Environment.GetEnvironmentVariable("USERPROFILE");
+                if (profile != null)
+                    DocumentFolder = Path.Combine(profile, "documents");
+            }
+            DefaultWorkDirectory = Directory.GetCurrentDirectory();
 #else
             DocumentFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            DefaultWorkDirectory = Environment.CurrentDirectory;
 #endif
         }
 
@@ -51,10 +67,6 @@ namespace NUnit
         /// <summary>
         /// Directory used for file output if not specified on commandline.
         /// </summary>
-#if NETSTANDARDAPP1_5 || NETCOREAPP1_0
-        public static readonly string DefaultWorkDirectory = DocumentFolder;
-#else
-        public static readonly string DefaultWorkDirectory = Environment.CurrentDirectory;
-#endif
+        public static readonly string DefaultWorkDirectory;
     }
 }

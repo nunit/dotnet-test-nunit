@@ -342,7 +342,7 @@ namespace NUnit.Runner
                     using (var writer = new FileStream(outputPath, FileMode.Create))
                         testResults.Save(writer);
 
-                    ColorConsole.WriteLine(ColorStyle.Default, $"Results saved as {spec.OutputPath}");
+                    ColorConsole.WriteLine(ColorStyle.Default, $"Results saved as {outputPath}");
                 }
                 catch(Exception ex)
                 {

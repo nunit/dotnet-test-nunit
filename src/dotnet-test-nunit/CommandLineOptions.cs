@@ -112,7 +112,7 @@ namespace NUnit.Runner
         public string DisplayTestLabels { get; private set; }
 
         string workDirectory = null;
-        public string WorkDirectory => workDirectory ?? NUnit.Env.DefaultWorkDirectory;
+        public string WorkDirectory => workDirectory ?? Env.DefaultWorkDirectory;
 
         public bool WorkDirectorySpecified => workDirectory != null;
 
