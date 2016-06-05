@@ -30,7 +30,7 @@ namespace NUnit.Runner
         public static readonly int OK = 0;
         public static readonly int INVALID_ARG = -1;
         public static readonly int INVALID_ASSEMBLY = -2;
-        public static readonly int FIXTURE_NOT_FOUND = -3;
+        public static readonly int INVALID_TEST_FIXTURE = -4;
         public static readonly int UNEXPECTED_ERROR = -100;
 
         #endregion

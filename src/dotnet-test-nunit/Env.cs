@@ -58,6 +58,7 @@ namespace NUnit
         /// Path to the 'My Documents' folder
         /// </summary>
         public static string DocumentFolder;
+
         /// <summary>
         /// Directory used for file output if not specified on commandline.
         /// </summary>

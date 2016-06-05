@@ -34,12 +34,12 @@ using Newtonsoft.Json;
 using NUnit.Runner.Sinks;
 using System.Collections.Generic;
 using NUnit.Engine;
-using System.Xml.Linq;
 using NUnit.Runner.Interfaces;
 using NUnit.Runner.TestListeners;
 using System.Linq;
 using Microsoft.DotNet.InternalAbstractions;
 using NUnit.Common;
+using System.Xml.Linq;
 
 namespace NUnit.Runner
 {
@@ -52,6 +52,7 @@ namespace NUnit.Runner
         ITestDiscoverySink _testDiscoverySink;
         ITestExecutionSink _testExecutionSink;
         Socket _socket;
+        string _workDirectory;
 
         public static int Main(string[] args)
         {
@@ -69,6 +70,7 @@ namespace NUnit.Runner
             try
             {
                 _options = new CommandLineOptions(args);
+                SetWorkDirectory();
             }
             catch (OptionException ex)
             {
@@ -219,8 +221,17 @@ namespace NUnit.Runner
             var reporter = new ResultReporter(summary, ColorConsole, _options);
             reporter.ReportResults();
 
-            // TODO: Save out the TestResult.xml
-            var testResult = reporter.TestResults;
+            // Save out the TestResult.xml
+            SaveTestResults(reporter.TestResults);
+
+            if (summary.UnexpectedError)
+                return ReturnCodes.UNEXPECTED_ERROR;
+
+            if (summary.InvalidAssemblies > 0)
+                return ReturnCodes.INVALID_ASSEMBLY;
+
+            if (summary.InvalidTestFixtures > 0)
+                return ReturnCodes.INVALID_TEST_FIXTURE;
 
             // Return the number of test failures
             return summary.FailedCount;
@@ -296,6 +307,49 @@ namespace NUnit.Runner
                 builder.SelectWhere(_options.WhereClause);
 
             return builder.GetFilter();
+        }
+
+        void SetWorkDirectory()
+        {
+            _workDirectory = _options.WorkDirectory;
+
+            if (_workDirectory == null)
+                _workDirectory = Env.DefaultWorkDirectory;
+            else if (!Directory.Exists(_workDirectory))
+                Directory.CreateDirectory(_workDirectory);
+        }
+
+        void SaveTestResults(XDocument testResults)
+        {
+            foreach (var spec in _options.ResultOutputSpecifications)
+            {
+                // Report on unsupported specifications instead of failing
+                if (spec.Format != "nunit3")
+                {
+                    ColorConsole.WriteLine(ColorStyle.Error, $"Only NUnit 3 test results are supported, skipping {spec.Format}");
+                    continue;
+                }
+
+                if (!string.IsNullOrWhiteSpace(spec.Transform))
+                {
+                    ColorConsole.WriteLine(ColorStyle.Error, $"XML Transforms are not currently supported, skipping");
+                    continue;
+                }
+
+                var outputPath = System.IO.Path.Combine(_workDirectory, spec.OutputPath);
+                try
+                {
+                    using (var writer = new FileStream(outputPath, FileMode.Create))
+                        testResults.Save(writer);
+
+                    ColorConsole.WriteLine(ColorStyle.Default, $"Results saved as {spec.OutputPath}");
+                }
+                catch(Exception ex)
+                {
+                    ColorConsole.Write(ColorStyle.Error, $"Failed to write result file {spec.OutputPath}");
+                    ColorConsole.Write(ColorStyle.Error, $"  Error: {ex.Message}");
+                }
+            }
         }
 
         #endregion
