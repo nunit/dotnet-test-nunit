@@ -31,8 +31,8 @@ namespace NUnit.Runner.TestListeners
     {
         readonly ITestDiscoverySink _sink;
 
-        public TestExploreListener(ITestDiscoverySink sink, CommandLineOptions options, string codepath)
-            : base(options, codepath)
+        public TestExploreListener(ITestDiscoverySink sink, CommandLineOptions options, string assemblyPath)
+            : base(options, assemblyPath)
         {
             _sink = sink;
         }
