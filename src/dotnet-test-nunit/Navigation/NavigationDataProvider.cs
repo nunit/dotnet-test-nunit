@@ -46,11 +46,16 @@ namespace NUnit.Runner.Navigation
             return _provider.GetSourceInformation(method);
         }
 
-        static Assembly LoadAssembly(string assemblyPath) =>
+        static Assembly LoadAssembly(string assemblyPath)
+        {
 #if NET451
-            Assembly.LoadFrom(assemblyPath);
+            return Assembly.LoadFrom(assemblyPath);
 #else
-            System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+            var assembyName = Path.GetFileNameWithoutExtension(assemblyPath);
+            return Assembly.Load(new AssemblyName(assembyName));
+            // I think dotnet/coreclr#5060 is causing the following to fail because of . in the name?
+            //return System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
 #endif
+        }
     }
 }

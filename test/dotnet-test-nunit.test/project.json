@@ -2,7 +2,7 @@
   "copyright": "Copyright (C) 2016 Charlie Poole",
   "authors": [ "Rob Prouse" ],
   "title": "NUnit .NET Core Runner Tests",
-  "name": "dotnet-test-nunit.test",
+  "name": "dotnet-test-nunit-test",
   "version": "3.3.0-*",
   "buildOptions": {
     "preserveCompilationContext": true,
