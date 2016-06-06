@@ -22,13 +22,8 @@
 // ***********************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using NUnit.Framework;
 using NUnit.Runner.TestListeners;
-using MsTest = Microsoft.Extensions.Testing.Abstractions.Test;
 
 namespace NUnit.Runner.Test.TestListeners
 {
