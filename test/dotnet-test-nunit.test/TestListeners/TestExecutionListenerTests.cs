@@ -30,6 +30,29 @@ namespace NUnit.Runner.Test.TestListeners
     [TestFixture]
     public class TestExecutionListenerTests
     {
+        const string SUCCESS_TEST_CASE_XML =
+            "<test-case id=\"1006\" name=\"CanSubtract(-1,-1,0)\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests.CanSubtract(-1,-1,0)\" methodname=\"CanSubtract\" classname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Runnable\" seed=\"1663476057\" result=\"Passed\" start-time=\"2016-06-06 23:31:34Z\" end-time=\"2016-06-06 23:31:34Z\" duration=\"0.000001\" asserts=\"1\" />";
+
+        const string IGNORE_TEST_CASE_XML =
+                "<test-case id=\"1021\" name=\"IgnoredTest\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests.IgnoredTest\" methodname=\"IgnoredTest\" classname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Ignored\" seed=\"1580158007\" result=\"Skipped\" label=\"Ignored\" start-time=\"2016-06-06 23:45:17Z\" end-time=\"2016-06-06 23:45:17Z\" duration=\"0.000001\" asserts=\"0\">" +
+                "  <properties>" +
+                "    <property name=\"_SKIPREASON\" value=\"Ignored Test\" />" +
+                "  </properties>" +
+                "  <reason>" +
+                "    <message><![CDATA[Ignored Test]]></message>" +
+                "  </reason>" +
+                "</test-case>";
+
+        const string EXPLICIT_TEST_CASE_XML =
+                "<test-case id=\"1022\" name=\"ExplicitTest\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests.ExplicitTest\" methodname=\"ExplicitTest\" classname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Explicit\" seed=\"1196887609\" result=\"Skipped\" label=\"Explicit\" start-time=\"2016-06-06 23:45:17Z\" end-time=\"2016-06-06 23:45:17Z\" duration=\"0.000505\" asserts=\"0\">" +
+                "  <properties>" +
+                "    <property name=\"_SKIPREASON\" value=\"Explicit Test\" />" +
+                "  </properties>" +
+                "  <reason>" +
+                "    <message><![CDATA[Explicit Test]]></message>" +
+                "  </reason>" +
+                "</test-case>";
+
         const string ERROR_TEST_CASE_XML =
                 "<test-case id=\"1018\" name=\"ErrorTest\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests.ErrorTest\" methodname=\"ErrorTest\" classname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Runnable\" seed=\"1658039280\" result=\"Failed\" label=\"Error\" start-time=\"2016-06-06 19:57:35Z\" end-time=\"2016-06-06 19:57:35Z\" duration=\"0.023031\" asserts=\"0\">" +
                 "  <failure>" +
@@ -63,6 +86,48 @@ namespace NUnit.Runner.Test.TestListeners
         {
             _sink = new Mocks.MockTestExecutionSink();
             _listener = new TestExecutionListener(_sink, new CommandLineOptions("--designtime"), @"\src");
+        }
+
+        [Test]
+        public void CanParseSuccess()
+        {
+            _listener.OnTestEvent(SUCCESS_TEST_CASE_XML);
+            var testResult = _sink.TestResult;
+            Assert.That(testResult, Is.Not.Null);
+            Assert.That(testResult.ErrorMessage, Is.Null.Or.Empty);
+            Assert.That(testResult.ErrorStackTrace, Is.Null.Or.Empty);
+            Assert.That(testResult.Outcome, Is.EqualTo(TestOutcome.Passed));
+            Assert.That(testResult.StartTime.Hour, Is.EqualTo(23));
+            Assert.That(testResult.EndTime.Minute, Is.EqualTo(31));
+            Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.000001d).Within(0.001d));
+        }
+
+        [Test]
+        public void CanParseIgnoredTests()
+        {
+            _listener.OnTestEvent(IGNORE_TEST_CASE_XML);
+            var testResult = _sink.TestResult;
+            Assert.That(testResult, Is.Not.Null);
+            Assert.That(testResult.ErrorMessage, Is.EqualTo("Ignored Test"));
+            Assert.That(testResult.ErrorStackTrace, Is.Null.Or.Empty);
+            Assert.That(testResult.Outcome, Is.EqualTo(TestOutcome.Skipped));
+            Assert.That(testResult.StartTime.Hour, Is.EqualTo(23));
+            Assert.That(testResult.EndTime.Minute, Is.EqualTo(45));
+            Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.000001d).Within(0.001d));
+        }
+
+        [Test]
+        public void CanParseExplicitTests()
+        {
+            _listener.OnTestEvent(EXPLICIT_TEST_CASE_XML);
+            var testResult = _sink.TestResult;
+            Assert.That(testResult, Is.Not.Null);
+            Assert.That(testResult.ErrorMessage, Is.EqualTo("Explicit Test"));
+            Assert.That(testResult.ErrorStackTrace, Is.Null.Or.Empty);
+            Assert.That(testResult.Outcome, Is.EqualTo(TestOutcome.Skipped));
+            Assert.That(testResult.StartTime.Hour, Is.EqualTo(23));
+            Assert.That(testResult.EndTime.Minute, Is.EqualTo(45));
+            Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.000001d).Within(0.001d));
         }
 
         [Test]
