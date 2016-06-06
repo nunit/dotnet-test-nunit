@@ -25,32 +25,45 @@ using System.Xml.Linq;
 using Microsoft.Extensions.Testing.Abstractions;
 using NUnit.Runner.Extensions;
 using NUnit.Runner.Interfaces;
+using NUnit.Runner.Navigation;
 
 namespace NUnit.Runner.TestListeners
 {
     public abstract class BaseTestListener : ITestListener
     {
-        readonly string _codepath;
+        readonly string _assemblyPath;
+        readonly NavigationDataProvider _provider;
 
         protected CommandLineOptions Options { get; }
 
-        public BaseTestListener(CommandLineOptions options, string codepath)
+        /// <summary>
+        /// Constructs a <see cref="BaseTestListener"/>
+        /// </summary>
+        /// <param name="options">The command line options passed into this run</param>
+        /// <param name="assemblyPath">The full path of the assembly that is being executed or explored</param>
+        public BaseTestListener(CommandLineOptions options, string assemblyPath)
         {
             Options = options;
-            _codepath = codepath;
+            _assemblyPath = assemblyPath;
+            _provider = NavigationDataProvider.GetNavigationDataProvider(assemblyPath);
+
+            // TODO: Log an error?
         }
 
         public abstract void OnTestEvent(string xml);
 
         protected Test ParseTest(XElement xml)
         {
+            var className = xml.Attribute("classname")?.Value;
+            var methodName = xml.Attribute("methodname")?.Value;
+            var sourceData = _provider?.GetSourceData(className, methodName);
             var test = new Test
             {
                 Id = xml.Attribute("id").ConvertToGuid(),
                 DisplayName = xml.Attribute("name")?.Value ?? "",
                 FullyQualifiedName = xml.Attribute("fullname")?.Value ?? "",
-                CodeFilePath = _codepath
-                // TODO: LineNumber
+                CodeFilePath = sourceData?.Filename,
+                LineNumber = sourceData?.LineNumber
             };
             // Add properties
             var properties = xml.Descendants("property");

@@ -56,7 +56,6 @@ namespace NUnit.Runner.Test.TestListeners
         {
             var test = _listener.TestParseTest(_testCase);
             Assert.That(test, Is.Not.Null);
-            Assert.That(test.CodeFilePath, Is.EqualTo(@"\src"));
             Assert.That(test.DisplayName, Is.EqualTo("LoadWithFrenchCanadianCulture"));
             Assert.That(test.FullyQualifiedName, Is.EqualTo("NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture"));
             Assert.That(test.Id, Is.Not.EqualTo(Guid.Empty));
