@@ -23,20 +23,15 @@
 
 using System;
 using System.Xml.Linq;
-using MsTest = Microsoft.Extensions.Testing.Abstractions.Test;
+using MsTestResult = Microsoft.Extensions.Testing.Abstractions.TestResult;
 using NUnit.Runner.TestListeners;
 
 namespace NUnit.Runner.Test.Mocks
 {
-    public class MockTestListener : BaseTestListener
+    public class MockTestExecutionListener : TestExecutionListener
     {
-        public MockTestListener() : base(new CommandLineOptions(), @"\src")
+        public MockTestExecutionListener() : base(null, new CommandLineOptions(), @"\src")
         {
-        }
-
-        public override void OnTestEvent(string xml)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -44,6 +39,6 @@ namespace NUnit.Runner.Test.Mocks
         /// </summary>
         /// <param name="xml"></param>
         /// <returns></returns>
-        public MsTest TestParseTest(XElement xml) => ParseTest(xml);
+        public MsTestResult TestParseTestResult(XElement xml) => ParseTestResult(xml);
     }
 }

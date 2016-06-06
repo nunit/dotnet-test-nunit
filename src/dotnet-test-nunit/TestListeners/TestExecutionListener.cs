@@ -22,6 +22,7 @@
 // ***********************************************************************
 
 using System;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Microsoft.Extensions.Testing.Abstractions;
 using NUnit.Runner.Extensions;
@@ -74,7 +75,7 @@ namespace NUnit.Runner.TestListeners
                 _sink?.SendTestResult(testResult);
         }
 
-        TestResult ParseTestResult(XElement xml)
+        protected TestResult ParseTestResult(XElement xml)
         {
             var test = ParseTest(xml);
             var testResult = new TestResult(test)
@@ -85,8 +86,33 @@ namespace NUnit.Runner.TestListeners
                 Outcome = xml.Attribute("result").ConvertToTestOutcome(),
                 ComputerName = Environment.MachineName
             };
-            // TODO: Messages and stack traces
+            // Output, Messages and stack traces
+            testResult.ErrorMessage = GetErrorMessage(xml);
+            testResult.ErrorStackTrace = xml.Element("failure")?.Element("stack-trace")?.Value;
+            string messages = xml.Element("output")?.Value;
+            if (!string.IsNullOrWhiteSpace(messages))
+                testResult.Messages.Add(messages);
             return testResult;
+        }
+
+        string GetErrorMessage(XElement xml)
+        {
+            var message = xml.Element("failure")?.Element("message")?.Value;
+            if(!string.IsNullOrWhiteSpace(message))
+            {
+                // If we're running in the IDE, remove any caret line from the message
+                // since it will be displayed using a variable font and won't make sense.
+                if (Options.DesignTime)
+                {
+                    string pattern = Environment.NewLine + "  -*\\^" + Environment.NewLine;
+                    message = Regex.Replace(message, pattern, Environment.NewLine, RegexOptions.Multiline);
+                }
+            }
+            else
+            {
+                message = xml.Element("reason")?.Element("message")?.Value;
+            }
+            return message;
         }
     }
 }

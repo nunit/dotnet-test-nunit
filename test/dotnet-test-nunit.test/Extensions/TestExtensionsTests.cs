@@ -59,7 +59,7 @@ namespace NUnit.Runner.Test.Extensions
             Assert.That(date.Hour, Is.EqualTo(19));
             Assert.That(date.Minute, Is.EqualTo(43));
             Assert.That(date.Second, Is.EqualTo(9));
-            Assert.That(date.Kind, Is.EqualTo(DateTimeKind.Utc));
+            Assert.That(date.Offset.TotalHours, Is.EqualTo(0d));
         }
 
         [Test]
@@ -78,13 +78,14 @@ namespace NUnit.Runner.Test.Extensions
         [TestCase("1", 1d)]
         [TestCase("0.1", 0.1d)]
         [TestCase("0.001", 0.001d)]
+        [TestCase("0.017533", 0.017533d)]
         [TestCase("0.0001", 0.001d, Description = "Minimum TimeSpan of 1 ms")]
         [TestCase("", 0.001d, Description = "Default TimeSpan of 1 ms")]
         public void CanConvertDurations(string duration, double expected)
         {
             var attr = new XAttribute("duration", duration);
             var ts = attr.ConvertToTimeSpan();
-            Assert.That(ts.TotalSeconds, Is.EqualTo(expected).Within(0.0001d));
+            Assert.That(ts.TotalSeconds, Is.EqualTo(expected).Within(0.001d));
         }
 
         [TestCase("Passed", TestOutcome.Passed)]

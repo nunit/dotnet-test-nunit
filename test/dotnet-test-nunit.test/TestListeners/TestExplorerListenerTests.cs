@@ -32,27 +32,28 @@ using MsTest = Microsoft.Extensions.Testing.Abstractions.Test;
 namespace NUnit.Runner.Test.TestListeners
 {
     [TestFixture]
-    public class BaseTestListenerTests
+    public class TestExplorerListenerTests
     {
-        const string TEST_CASE_XML = "<test-case id=\"0-3896\" name=\"LoadWithFrenchCanadianCulture\" fullname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture\" methodname=\"LoadWithFrenchCanadianCulture\" classname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests\" runstate=\"Runnable\" seed=\"1611686282\" result=\"Passed\" start-time=\"2016-06-02 02:17:03Z\" end-time=\"2016-06-02 02:17:03Z\" duration=\"0.002513\" asserts=\"5\">" +
-              "  <properties>" +
-              "    <property name = \"SetCulture\" value=\"fr-CA\" />" +
-              "    <property name = \"UICulture\" value=\"en-CA\" />" +
-              "  </properties>" +
-              "</test-case>";
+        const string TEST_CASE_XML_WITH_PROPERTIES =
+                "<test-case id=\"0-3896\" name=\"LoadWithFrenchCanadianCulture\" fullname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture\" methodname=\"LoadWithFrenchCanadianCulture\" classname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests\" runstate=\"Runnable\" seed=\"1611686282\" result=\"Passed\" start-time=\"2016-06-02 02:17:03Z\" end-time=\"2016-06-02 02:17:03Z\" duration=\"0.002513\" asserts=\"5\">" +
+                "  <properties>" +
+                "    <property name = \"SetCulture\" value=\"fr-CA\" />" +
+                "    <property name = \"UICulture\" value=\"en-CA\" />" +
+                "  </properties>" +
+                "</test-case>";
 
         XElement _testCase;
-        Mocks.MockTestListener _listener;
+        Mocks.MockTestExploreListener _listener;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _testCase = XElement.Parse(TEST_CASE_XML);
-            _listener = new Mocks.MockTestListener();
+            _testCase = XElement.Parse(TEST_CASE_XML_WITH_PROPERTIES);
+            _listener = new Mocks.MockTestExploreListener();
         }
 
         [Test]
-        public void CanParseTests()
+        public void CanParseTestsWithProperties()
         {
             var test = _listener.TestParseTest(_testCase);
             Assert.That(test, Is.Not.Null);
