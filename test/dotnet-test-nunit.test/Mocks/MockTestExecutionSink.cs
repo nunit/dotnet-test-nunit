@@ -21,24 +21,40 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-using System;
-using System.Xml.Linq;
+using Microsoft.Extensions.Testing.Abstractions;
 using MsTest = Microsoft.Extensions.Testing.Abstractions.Test;
-using NUnit.Runner.TestListeners;
+using MsTestResult = Microsoft.Extensions.Testing.Abstractions.TestResult;
 
 namespace NUnit.Runner.Test.Mocks
 {
-    public class MockTestExploreListener : TestExploreListener
+    public class MockTestExecutionSink : ITestExecutionSink
     {
-        public MockTestExploreListener() : base(null, new CommandLineOptions(), @"\src")
+        public bool WaitingCommandReceived { get; private set; }
+
+        public MsTest TestStarted { get; private set; }
+
+        public bool TestCompletedReceived { get; private set; }
+
+        public MsTestResult TestResult { get; private set; }
+
+        public void SendWaitingCommand()
         {
+            WaitingCommandReceived = true;
         }
 
-        /// <summary>
-        /// Exposes ParseTest for testing
-        /// </summary>
-        /// <param name="xml"></param>
-        /// <returns></returns>
-        public MsTest TestParseTest(XElement xml) => ParseTest(xml);
+        public void SendTestStarted(MsTest test)
+        {
+            TestStarted = test;
+        }
+
+        public void SendTestCompleted()
+        {
+            TestCompletedReceived = true;
+        }
+
+        public void SendTestResult(MsTestResult testResult)
+        {
+            TestResult = testResult;
+        }
     }
 }

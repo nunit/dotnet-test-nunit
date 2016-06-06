@@ -28,7 +28,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Extensions.Testing.Abstractions;
 using NUnit.Framework;
-using MsTest = Microsoft.Extensions.Testing.Abstractions.Test;
+using NUnit.Runner.TestListeners;
+using MsTestResult = Microsoft.Extensions.Testing.Abstractions.TestResult;
 
 namespace NUnit.Runner.Test.TestListeners
 {
@@ -60,50 +61,52 @@ namespace NUnit.Runner.Test.TestListeners
                 "]]></output>" +
                 "</test-case>";
 
-        Mocks.MockTestExecutionListener _listener;
+        Mocks.MockTestExecutionSink _sink;
+        TestExecutionListener _listener;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _listener = new Mocks.MockTestExecutionListener();
+            _sink = new Mocks.MockTestExecutionSink();
+            _listener = new TestExecutionListener(_sink, new CommandLineOptions("--designtime"), @"\src");
         }
 
         [Test]
         public void CanParseTestErrors()
         {
-            var testCase = XElement.Parse(ERROR_TEST_CASE_XML);
-            var test = _listener.TestParseTestResult(testCase);
-            Assert.That(test, Is.Not.Null);
-            Assert.That(test.ErrorMessage?.Trim(), Does.StartWith("System.ArgumentException"));
-            Assert.That(test.ErrorStackTrace?.Trim(), Does.StartWith("at NUnitWithDotNetCoreRC2.Test.CalculatorTests.ErrorTest()"));
-            Assert.That(test.Outcome, Is.EqualTo(TestOutcome.Failed));
-            Assert.That(test.StartTime.Hour, Is.EqualTo(19));
-            Assert.That(test.EndTime.Minute, Is.EqualTo(57));
-            Assert.That(test.Duration.TotalSeconds, Is.EqualTo(0.023031).Within(0.001d));
+            _listener.OnTestEvent(ERROR_TEST_CASE_XML);
+            var testResult = _sink.TestResult;
+            Assert.That(testResult, Is.Not.Null);
+            Assert.That(testResult.ErrorMessage?.Trim(), Does.StartWith("System.ArgumentException"));
+            Assert.That(testResult.ErrorStackTrace?.Trim(), Does.StartWith("at NUnitWithDotNetCoreRC2.Test.CalculatorTests.ErrorTest()"));
+            Assert.That(testResult.Outcome, Is.EqualTo(TestOutcome.Failed));
+            Assert.That(testResult.StartTime.Hour, Is.EqualTo(19));
+            Assert.That(testResult.EndTime.Minute, Is.EqualTo(57));
+            Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.023031).Within(0.001d));
         }
 
         [Test]
         public void CanParseTestFailures()
         {
-            var testCase = XElement.Parse(FAILED_TEST_CASE_XML);
-            var test = _listener.TestParseTestResult(testCase);
-            Assert.That(test, Is.Not.Null);
-            Assert.That(test.ErrorMessage?.Trim(), Does.StartWith("Expected: 3"));
-            Assert.That(test.ErrorStackTrace?.Trim(), Does.StartWith("at NUnitWithDotNetCoreRC2.Test.CalculatorTests.FailedTest()"));
-            Assert.That(test.Outcome, Is.EqualTo(TestOutcome.Failed));
-            Assert.That(test.StartTime.Hour, Is.EqualTo(19));
-            Assert.That(test.EndTime.Minute, Is.EqualTo(57));
-            Assert.That(test.Duration.TotalSeconds, Is.EqualTo(0.017533).Within(0.001d));
+            _listener.OnTestEvent(FAILED_TEST_CASE_XML);
+            var testResult = _sink.TestResult;
+            Assert.That(testResult, Is.Not.Null);
+            Assert.That(testResult.ErrorMessage?.Trim(), Does.StartWith("Expected: 3"));
+            Assert.That(testResult.ErrorStackTrace?.Trim(), Does.StartWith("at NUnitWithDotNetCoreRC2.Test.CalculatorTests.FailedTest()"));
+            Assert.That(testResult.Outcome, Is.EqualTo(TestOutcome.Failed));
+            Assert.That(testResult.StartTime.Hour, Is.EqualTo(19));
+            Assert.That(testResult.EndTime.Minute, Is.EqualTo(57));
+            Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.017533).Within(0.001d));
         }
 
         [Test]
         public void CanParseTestOutput()
         {
-            var testCase = XElement.Parse(TESTCONTEXT_OUTPUT_TEST_CASE_XML);
-            var test = _listener.TestParseTestResult(testCase);
-            Assert.That(test, Is.Not.Null);
-            Assert.That(test.Messages.Count, Is.EqualTo(1));
-            Assert.That(test.Messages[0], Does.StartWith("Test context output"));
+            _listener.OnTestEvent(TESTCONTEXT_OUTPUT_TEST_CASE_XML);
+            var testResult = _sink.TestResult;
+            Assert.That(testResult, Is.Not.Null);
+            Assert.That(testResult.Messages.Count, Is.EqualTo(1));
+            Assert.That(testResult.Messages[0], Does.StartWith("Test context output"));
         }
     }
 }

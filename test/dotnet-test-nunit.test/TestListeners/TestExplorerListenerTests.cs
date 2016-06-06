@@ -27,6 +27,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using NUnit.Framework;
+using NUnit.Runner.TestListeners;
 using MsTest = Microsoft.Extensions.Testing.Abstractions.Test;
 
 namespace NUnit.Runner.Test.TestListeners
@@ -35,27 +36,30 @@ namespace NUnit.Runner.Test.TestListeners
     public class TestExplorerListenerTests
     {
         const string TEST_CASE_XML_WITH_PROPERTIES =
-                "<test-case id=\"0-3896\" name=\"LoadWithFrenchCanadianCulture\" fullname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture\" methodname=\"LoadWithFrenchCanadianCulture\" classname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests\" runstate=\"Runnable\" seed=\"1611686282\" result=\"Passed\" start-time=\"2016-06-02 02:17:03Z\" end-time=\"2016-06-02 02:17:03Z\" duration=\"0.002513\" asserts=\"5\">" +
-                "  <properties>" +
-                "    <property name = \"SetCulture\" value=\"fr-CA\" />" +
-                "    <property name = \"UICulture\" value=\"en-CA\" />" +
-                "  </properties>" +
-                "</test-case>";
+                "<test-suite type=\"ParameterizedMethod\" id=\"1004\" name=\"LoadWithFrenchCanadianCulture\" fullname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture\" runstate=\"Runnable\" testcasecount=\"1\">" +
+                "  <test-case id=\"0-3896\" name=\"LoadWithFrenchCanadianCulture\" fullname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture\" methodname=\"LoadWithFrenchCanadianCulture\" classname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests\" runstate=\"Runnable\" seed=\"1611686282\" >" +
+                "    <properties>" +
+                "      <property name = \"SetCulture\" value=\"fr-CA\" />" +
+                "      <property name = \"UICulture\" value=\"en-CA\" />" +
+                "    </properties>" +
+                "  </test-case>" +
+                "</test-suite>";
 
-        XElement _testCase;
-        Mocks.MockTestExploreListener _listener;
+        Mocks.MockTestExplorerSink _sink;
+        TestExploreListener _listener;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _testCase = XElement.Parse(TEST_CASE_XML_WITH_PROPERTIES);
-            _listener = new Mocks.MockTestExploreListener();
+            _sink = new Mocks.MockTestExplorerSink();
+            _listener = new TestExploreListener(_sink, new CommandLineOptions("--designtime"), @"\src");
         }
 
         [Test]
         public void CanParseTestsWithProperties()
         {
-            var test = _listener.TestParseTest(_testCase);
+            _listener.OnTestEvent(TEST_CASE_XML_WITH_PROPERTIES);
+            var test = _sink.TestFound;
             Assert.That(test, Is.Not.Null);
             Assert.That(test.DisplayName, Is.EqualTo("LoadWithFrenchCanadianCulture"));
             Assert.That(test.FullyQualifiedName, Is.EqualTo("NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture"));
