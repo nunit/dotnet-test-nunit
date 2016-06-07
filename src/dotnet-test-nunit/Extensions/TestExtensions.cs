@@ -57,12 +57,12 @@ namespace NUnit.Runner.Extensions
             return new Guid(guid);
         }
 
-        public static DateTime ConvertToDateTime(this XAttribute attribute)
+        public static DateTimeOffset ConvertToDateTime(this XAttribute attribute)
         {
-            var result = DateTime.UtcNow;
+            var result = DateTimeOffset.UtcNow;
 
             if (attribute != null)
-                DateTime.TryParse(attribute.Value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out result);
+                DateTimeOffset.TryParse(attribute.Value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out result);
 
             return result;
         }
