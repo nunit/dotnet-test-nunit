@@ -46,8 +46,6 @@ namespace NUnit.Runner.TestListeners
             Options = options;
             _assemblyPath = assemblyPath;
             _provider = NavigationDataProvider.GetNavigationDataProvider(assemblyPath);
-
-            // TODO: Log an error?
         }
 
         public abstract void OnTestEvent(string xml);
@@ -71,7 +69,9 @@ namespace NUnit.Runner.TestListeners
             {
                 var name = property.Attribute("name")?.Value ?? "";
                 var value = property.Attribute("value")?.Value ?? "";
-                test.Properties.Add(name, value);
+                // TODO: When there is a way to support multiple categories, look
+                // for the Category key and append them.
+                test.Properties[name] = value;
             }
             return test;
         }
