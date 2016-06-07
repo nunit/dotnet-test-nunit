@@ -40,6 +40,16 @@ namespace NUnit.Runner.Test.TestListeners
                 "  </test-case>" +
                 "</test-suite>";
 
+        const string TEST_CASE_XML_WITH_MULTIPLE_CATEGORIES =
+                "<test-suite type=\"TestSuite\" id=\"1005\" name=\"CalculatorTests\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Runnable\" testcasecount=\"1\">" +
+                "  <test-case id=\"1019\" name=\"MultipleCategoryTest\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests.MultipleCategoryTest\" methodname=\"MultipleCategoryTest\" classname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Runnable\" seed=\"294301268\">" +
+                "    <properties>" +
+                "      <property name=\"Category\" value=\"One\" />" +
+                "      <property name=\"Category\" value=\"Two\" />" +
+                "    </properties>" +
+                "  </test-case>" +
+                "</test-suite>";
+
         Mocks.MockTestExplorerSink _sink;
         TestExploreListener _listener;
 
@@ -62,6 +72,20 @@ namespace NUnit.Runner.Test.TestListeners
             Assert.That(test.Properties.Count, Is.EqualTo(2));
             Assert.That(test.Properties["SetCulture"], Is.EqualTo("fr-CA"));
             Assert.That(test.Properties["UICulture"], Is.EqualTo("en-CA"));
+        }
+
+        [Test]
+        public void CanParseTestsWithMultipleCategories()
+        {
+            _listener.OnTestEvent(TEST_CASE_XML_WITH_MULTIPLE_CATEGORIES);
+            var test = _sink.TestFound;
+            Assert.That(test, Is.Not.Null);
+            Assert.That(test.DisplayName, Is.EqualTo("MultipleCategoryTest"));
+            Assert.That(test.FullyQualifiedName, Is.EqualTo("NUnitWithDotNetCoreRC2.Test.CalculatorTests.MultipleCategoryTest"));
+            Assert.That(test.Id, Is.Not.EqualTo(Guid.Empty));
+            // TODO: Visual Studio currently only supports a single category
+            Assert.That(test.Properties.Count, Is.EqualTo(1));
+            Assert.That(test.Properties["Category"], Is.EqualTo("Two"));
         }
     }
 }
