@@ -3,7 +3,7 @@ $PreReleaseName = ''
 
 If($env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null) {
   $PreReleaseName = '-PR-' + $env:APPVEYOR_PULL_REQUEST_NUMBER
-} ElseIf($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+} ElseIf($env:APPVEYOR_REPO_BRANCH -ne 'master' -and -not $env:APPVEYOR_REPO_BRANCH.StartsWith('release')) {
   $PreReleaseName = '-' + $env:APPVEYOR_REPO_BRANCH
 } Else {
   $PreReleaseName = '-CI'
