@@ -6,21 +6,7 @@
 
 ## Usage
 
-`dotnet-test-nunit` is still under development, so you will need to add a `NuGet.Config` file to your solution to download NuGet packages from the NUnit CI NuGet feeds.
-
-### NuGet.Config
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <packageSources>
-    <clear/>
-    <add key="NUnit CI Builds (AppVeyor)" value="https://ci.appveyor.com/nuget/nunit" />
-    <add key="dotnet-test-nunit CI Builds (AppVeyor)" value="https://ci.appveyor.com/nuget/dotnet-test-nunit" />
-    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-  </packageSources>
-</configuration>
-```
+`dotnet-test-nunit` is still an alpha release, so you need to select `show prereleases` if you are using Visual Studio.
 
 Your `project.json` in your test project should look like the following;
 
@@ -34,7 +20,7 @@ Your `project.json` in your test project should look like the following;
         "NUnitWithDotNetCoreRC2": "1.0.0-*",
         "NETStandard.Library": "1.5.0-rc2-24027",
         "NUnit": "3.2.1",
-        "dotnet-test-nunit": "3.3.0.49-CI"
+        "dotnet-test-nunit": "3.4.0-alpha-1"
     },
     "testRunner": "nunit",
 
@@ -55,7 +41,7 @@ Your `project.json` in your test project should look like the following;
 }
 ```
 
-The lines of interest here are the dependency on `dotnet-test-nunit`. Feel free to use the newest pre-release version that ends in `-CI`, that is latest from the master branch. Note that the `NUnitWithDotNetCoreRC2` dependency is the project under test.
+The lines of interest here are the dependency on `dotnet-test-nunit`. Feel free to use the newest version that is available. Note that the `NUnitWithDotNetCoreRC2` dependency is the project under test.
 
 I have added `"testRunner": "nunit"` to specify NUnit 3 as the test adapter. I also had to add to the imports for both the test adapter and NUnit to resolve. Lastly, I had to add the `runtimes`.
 
@@ -74,7 +60,6 @@ dotnet test .\test\NUnitWithDotNetCoreRC2.Test\
 
 ### Notes
 
-Double clicking on a test in Visual Studio does not currently work. That is being tracked in #11.
-
-Also note that the `dotnet` command line swallows blank lines and does not work with color.
-The NUnit test runner's output is in color, but you won't see it. These are known issues with the `dotnet` cli.
+Note that the `dotnet` command line swallows blank lines and does not work with color.
+The NUnit test runner's output is in color, but you won't see it. These are known issues with
+the `dotnet` CLI and not an NUnit bug.
