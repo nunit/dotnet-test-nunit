@@ -16,7 +16,11 @@ before_build:
 
 build_script:
   - cmd: dotnet build -c Release test\dotnet-test-nunit.test.runner\
+
+test_script:
   - cmd: dotnet run -c Release -p test\dotnet-test-nunit.test.runner\
+
+after_test:
   - cmd: dotnet pack -c Release src\dotnet-test-nunit\
 
 test: off
