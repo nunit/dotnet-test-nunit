@@ -6,6 +6,8 @@
 
 ## Usage
 
+`dotnet-test-nunit` is still an alpha release, so you need to select `show prereleases` if you are using Visual Studio.
+
 Your `project.json` in your test project should look like the following;
 
 ### project.json
@@ -18,23 +20,24 @@ Your `project.json` in your test project should look like the following;
         "NUnitWithDotNetCoreRC2": "1.0.0-*",
         "NETStandard.Library": "1.5.0-rc2-24027",
         "NUnit": "3.2.1",
-        "dotnet-test-nunit": "3.4.0-alpha-1"
+        "dotnet-test-nunit": "3.4.0-alpha-2"
     },
     "testRunner": "nunit",
 
     "frameworks": {
-        "netstandard1.5": {
+        "netcoreapp1.0": {
             "imports": [
                 "dnxcore50",
                 "netcoreapp1.0",
                 "portable-net45+win8"
-            ]
+            ],
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "version": "1.0.0-*",
+                    "type": "platform"
+                }
+            }
         }
-    },
-
-    "runtimes": {
-        "win10-x86": { },
-        "win10-x64": { }
     }
 }
 ```
@@ -58,5 +61,6 @@ dotnet test .\test\NUnitWithDotNetCoreRC2.Test\
 
 ### Notes
 
-Also note that the `dotnet` command line swallows blank lines and does not work with color.
-The NUnit test runner's output is in color, but you won't see it. These are known issues with the `dotnet` cli.
+Note that the `dotnet` command line swallows blank lines and does not work with color.
+The NUnit test runner's output is in color, but you won't see it. These are known issues with
+the `dotnet` CLI and not an NUnit bug.
