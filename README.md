@@ -20,28 +20,29 @@ Your `project.json` in your test project should look like the following;
         "NUnitWithDotNetCoreRC2": "1.0.0-*",
         "NETStandard.Library": "1.5.0-rc2-24027",
         "NUnit": "3.2.1",
-        "dotnet-test-nunit": "3.4.0-alpha-1"
+        "dotnet-test-nunit": "3.4.0-alpha-2"
     },
     "testRunner": "nunit",
 
     "frameworks": {
-        "netstandard1.5": {
+        "netcoreapp1.0": {
             "imports": [
                 "dnxcore50",
                 "netcoreapp1.0",
                 "portable-net45+win8"
-            ]
+            ],
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "version": "1.0.0-*",
+                    "type": "platform"
+                }
+            }
         }
-    },
-
-    "runtimes": {
-        "win10-x86": { },
-        "win10-x64": { }
     }
 }
 ```
 
-The lines of interest here are the dependency on `dotnet-test-nunit`. Feel free to use the newest version that is available. Note that the `NUnitWithDotNetCoreRC2` dependency is the project under test.
+The lines of interest here are the dependency on `dotnet-test-nunit`. Note that the `NUnitWithDotNetCoreRC2` dependency is the project under test.
 
 I have added `"testRunner": "nunit"` to specify NUnit 3 as the test adapter. I also had to add to the imports for both the test adapter and NUnit to resolve. Lastly, I had to add the `runtimes`.
 
