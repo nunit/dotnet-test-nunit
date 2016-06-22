@@ -1,6 +1,6 @@
 # NUnit 3 Test Runner for .NET Core
 
-[![Build status](https://ci.appveyor.com/api/projects/status/yg7dawcy1106g1li/branch/master?svg=true)](https://ci.appveyor.com/project/CharliePoole/dotnet-test-nunit/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/yg7dawcy1106g1li/branch/master?svg=true)](https://ci.appveyor.com/project/CharliePoole/dotnet-test-nunit/branch/master) [![Travis Build Status](https://travis-ci.org/nunit/dotnet-test-nunit.svg?branch=master)](https://travis-ci.org/nunit/dotnet-test-nunit)
 
 `dotnet-test-nunit` is the unit test runner for .NET Core for running unit tests with NUnit 3.
 
