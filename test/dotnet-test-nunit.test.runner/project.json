@@ -11,7 +11,7 @@
   },
 
   "dependencies": {
-    "NUnitLite": "3.2.0",
+    "NUnitLite": "3.4.0",
     "dotnet-test-nunit": {
       "target": "project"
     },
@@ -22,18 +22,16 @@
 
   "frameworks": {
     "netcoreapp1.0": {
-      "imports": [
-        "dnxcore50",
-        "netstandard1.5",
-        "portable-net45+win8"
-      ],
+      "imports": "dotnet5.6",
       "dependencies": {
         "Microsoft.NETCore.App": {
           "type": "platform",
-          "version": "1.0.0-rc2-3002702"
-        }
+          "version": "1.0.0"
+        },
+        "System.IO.FileSystem": "4.0.1",
+        "System.Console": "4.0.0"
       }
     },
-    "net451": { }
+    "net451": {}
   }
 }

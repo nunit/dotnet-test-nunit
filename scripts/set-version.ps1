@@ -14,6 +14,6 @@ $ScriptDir = Split-Path -Path $PSScriptFilePath -Parent
 $SolutionRoot = Split-Path -Path $ScriptDir -Parent
 
  $ProjectJsonPath = Join-Path -Path $SolutionRoot -ChildPath "src\dotnet-test-nunit\project.json"
- (gc -Path $ProjectJsonPath) `
- 	-replace "(?<=`"version`":\s`")[.\w-]*(?=`",)", "$ReleaseVersionNumber$PreReleaseName" |
- 	sc -Path $ProjectJsonPath -Encoding UTF8
+ $re = [regex]"(?<=`"version`":\s`")[.\w-]*(?=`",)"
+ $re.Replace([string]::Join("`n", (Get-Content -Path $ProjectJsonPath)), "$ReleaseVersionNumber$PreReleaseName", 1) |
+ 	Set-Content -Path $ProjectJsonPath -Encoding UTF8
