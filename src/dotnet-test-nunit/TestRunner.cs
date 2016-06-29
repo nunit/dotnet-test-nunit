@@ -25,7 +25,7 @@ using Microsoft.DotNet.InternalAbstractions;
 using Microsoft.Extensions.Testing.Abstractions;
 using Newtonsoft.Json;
 using NUnit.Common;
-using NUnit.Engine.Compatibility;
+using NUnit.Compatibility;
 using NUnit.Engine;
 using NUnit.Options;
 using NUnit.Runner.Interfaces;
