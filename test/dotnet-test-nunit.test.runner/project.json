@@ -3,7 +3,7 @@
   "authors": [ "Rob Prouse" ],
   "title": "NUnit .NET Core Runner Test Runner",
   "name": "dotnet-test-nunit.test.runner",
-  "version": "3.3.0-*",
+  "version": "3.4.0-*",
   "buildOptions": {
     "emitEntryPoint": true,
     "preserveCompilationContext": true,
