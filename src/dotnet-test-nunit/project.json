@@ -12,7 +12,7 @@
   },
   "packOptions": {
     "requireLicenseAcceptance": false,
-    "tags": [ "testing", "tdd", "dnx", "nunit" ],
+    "tags": [ "testing", "tdd", "dotnet", "core", "nunit" ],
     "iconUrl": "https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/nunit_256.png",
     "licenseUrl": "https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/LICENSE",
     "repository": {
