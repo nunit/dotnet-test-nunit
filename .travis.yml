@@ -30,7 +30,6 @@ matrix:
 before_install:
   # Install OpenSSL
   - if test "$TRAVIS_OS_NAME" == "osx"; then
-      brew update;
       brew install openssl;
       brew link --force openssl;
       export DOTNET_SDK_URL="https://go.microsoft.com/fwlink/?LinkID=809128";
@@ -107,7 +106,10 @@ install:
   # ```
   # Now the actual one-liner (compressed) version:
   #
-  - . $HOME/.nvm/nvm.sh && nvm install stable && nvm use stable && node -p "jsonPath='./test/dotnet-test-nunit.test.runner/project.json';data=require(jsonPath);fs=require('fs');delete data.frameworks.net451;fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2))"
+  - if test "$TRAVIS_OS_NAME" == "linux"; then
+      nvm install stable && nvm use stable;
+    fi
+  - node -e "jsonPath='./test/dotnet-test-nunit.test.runner/project.json';data=require(jsonPath);fs=require('fs');delete data.frameworks.net451;fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2))"
 
   # Restore dependencies
   - dotnet restore
