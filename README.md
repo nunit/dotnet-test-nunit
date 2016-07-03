@@ -42,7 +42,7 @@ I have added `"testRunner": "nunit"` to specify NUnit 3 as the test adapter. I a
 
 You can now run your tests using the Visual Studio Test Explorer, or by running `dotnet test` from the command line.
 
-```
+```sh
 # Restore the NuGet packages
 dotnet restore
 
@@ -50,7 +50,7 @@ dotnet restore
 dotnet test
 
 # Run the unit tests in a different directory
-dotnet test .\test\NUnitWithDotNetCoreRC2.Test\
+dotnet test test/NUnitWithDotNetCoreRC2.Test
 ```
 
 ### Notes
