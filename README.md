@@ -17,20 +17,14 @@ Your `project.json` in your test project should look like the following;
     "version": "1.0.0-*",
 
     "dependencies": {
-        "NUnitWithDotNetCoreRC2": "1.0.0-*",
-        "NETStandard.Library": "1.5.0-rc2-24027",
-        "NUnit": "3.2.1",
-        "dotnet-test-nunit": "3.4.0-alpha-2"
+        "dotnet-test-nunit": "3.4.0-beta-1"
     },
+
     "testRunner": "nunit",
 
     "frameworks": {
         "netcoreapp1.0": {
-            "imports": [
-                "dnxcore50",
-                "netcoreapp1.0",
-                "portable-net45+win8"
-            ],
+            "imports": "portable-net45+win8",
             "dependencies": {
                 "Microsoft.NETCore.App": {
                     "version": "1.0.0-*",
