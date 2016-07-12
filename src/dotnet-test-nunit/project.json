@@ -24,7 +24,7 @@
   "dependencies": {
     "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview2-003121",
     "Microsoft.Extensions.DependencyModel": "1.0.0",
-    "NUnit.Portable.Agent": "3.4.0-beta-1"
+    "NUnit.Portable.Agent": "3.3.0.58-issue-10"
   },
 
   "frameworks": {

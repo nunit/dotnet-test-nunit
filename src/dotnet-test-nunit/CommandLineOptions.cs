@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using NUnit.Common;
+using NUnit.Engine;
 using NUnit.Options;
 
 namespace NUnit.Runner
@@ -73,6 +73,8 @@ namespace NUnit.Runner
 
         public IList<string> TestList { get; } = new List<string>();
 
+        public string TestParameters { get; private set; }
+
         public string WhereClause { get; private set; }
         public bool WhereClauseSpecified => WhereClause != null;
 
@@ -81,6 +83,8 @@ namespace NUnit.Runner
 
         public int RandomSeed { get; private set; } = -1;
         public bool RandomSeedSpecified => RandomSeed >= 0;
+
+        public string DefaultTestNamePattern { get; private set; }
 
 #if false
         public int NumberOfTestWorkers { get; private set; } = -1;
@@ -236,6 +240,23 @@ namespace NUnit.Runner
             this.Add("where=", "Test selection {EXPRESSION} indicating what tests will be run. See description below.",
                 v => WhereClause = RequiredValue(v, "--where"));
 
+            this.Add("params|p=", "Define a test parameter.",
+                v =>
+                {
+                    string parameters = RequiredValue(v, "--params");
+
+                    foreach (string param in parameters.Split(new[] { ';' }))
+                    {
+                        if (!param.Contains("="))
+                            ErrorMessages.Add("Invalid format for test parameter. Use NAME=VALUE.");
+                    }
+
+                    if (TestParameters == null)
+                        TestParameters = parameters;
+                    else
+                        TestParameters += ";" + parameters;
+                });
+
             this.Add("timeout=", "Set timeout for each test case in {MILLISECONDS}.",
                 v => DefaultTimeout = RequiredInt(v, "--timeout"));
 
@@ -279,6 +300,9 @@ namespace NUnit.Runner
 
             this.Add("labels=", "Specify whether to write test case names to the output. Values: Off, On, All",
                 v => DisplayTestLabels = RequiredValue(v, "--labels", "Off", "On", "All"));
+
+            this.Add("test-name-format=", "Non-standard naming pattern to use in generating test names.",
+                v => DefaultTestNamePattern = RequiredValue(v, "--test-name-format"));
 
             this.Add("trace=", "Set internal trace {LEVEL}.\nValues: Off, Error, Warning, Info, Verbose (Debug)",
                 v => InternalTraceLevel = RequiredValue(v, "--trace", "Off", "Error", "Warning", "Info", "Verbose", "Debug"));
