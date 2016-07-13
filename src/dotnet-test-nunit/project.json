@@ -15,6 +15,7 @@
     "tags": [ "testing", "tdd", "dotnet", "core", "nunit" ],
     "iconUrl": "https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/nunit_256.png",
     "licenseUrl": "https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/LICENSE",
+    "projectUrl": "https://github.com/nunit/dotnet-test-nunit",
     "repository": {
       "type": "git",
       "url": "https://github.com/nunit/dotnet-test-nunit"
