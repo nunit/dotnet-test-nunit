@@ -78,6 +78,23 @@ namespace NUnit.Runner.Test.TestListeners
                 "]]></output>" +
                 "</test-case>";
 
+
+        const string TEST_SUITE_XML =
+                "<test-suite type=\"ParameterizedMethod\" id=\"1004\" name=\"LoadWithFrenchCanadianCulture\" fullname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture\" runstate=\"Runnable\" testcasecount=\"1\">" +
+                "  <test-case id=\"0-3896\" name=\"LoadWithFrenchCanadianCulture\" fullname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture\" methodname=\"LoadWithFrenchCanadianCulture\" classname=\"NUnit.Framework.Internal.CultureSettingAndDetectionTests\" runstate=\"Runnable\" seed=\"1611686282\" >" +
+                "    <properties>" +
+                "      <property name = \"SetCulture\" value=\"fr-CA\" />" +
+                "      <property name = \"UICulture\" value=\"en-CA\" />" +
+                "    </properties>" +
+                "  </test-case>" +
+                "</test-suite>";
+
+        const string TEST_OUTPUT =
+                "<test-output stream=\"theStream\" testname=\"NUnit.Output.Test\">This is the test output</test-output>";
+
+        const string TEST_OUTPUT_WITH_CDATA =
+                "<test-output stream=\"theStream\" testname=\"NUnit.Output.CDataTest\"><![CDATA[Test CData output]]></test-output>";
+
         Mocks.MockTestExecutionSink _sink;
         TestExecutionListener _listener;
 
@@ -166,6 +183,64 @@ namespace NUnit.Runner.Test.TestListeners
             Assert.That(testResult, Is.Not.Null);
             Assert.That(testResult.Messages.Count, Is.EqualTo(1));
             Assert.That(testResult.Messages[0], Does.StartWith("Test context output"));
+        }
+
+        [Test]
+        public void FiresTestFinished()
+        {
+            string test = null;
+            string output = null;
+            _listener.TestFinished += (sender, args) =>
+            {
+                test = args.TestName;
+                output = args.TestOutput;
+            };
+
+            _listener.OnTestEvent(TESTCONTEXT_OUTPUT_TEST_CASE_XML);
+
+            Assert.That(test, Is.Not.Null);
+            Assert.That(test, Is.EqualTo("NUnitWithDotNetCoreRC2.Test.CalculatorTests.TestWithTestContextOutput"));
+
+            Assert.That(output, Is.Not.Null);
+            Assert.That(output, Does.StartWith("Test context output"));
+        }
+
+        [Test]
+        public void FiresSuiteFinished()
+        {
+            string test = null;
+            _listener.SuiteFinished += (sender, args) => test = args.TestName;
+
+            _listener.OnTestEvent(TEST_SUITE_XML);
+
+            Assert.That(test, Is.Not.Null);
+            Assert.That(test, Is.EqualTo("NUnit.Framework.Internal.CultureSettingAndDetectionTests.LoadWithFrenchCanadianCulture"));
+        }
+
+        [TestCase(TEST_OUTPUT, "NUnit.Output.Test", "This is the test output")]
+        [TestCase(TEST_OUTPUT_WITH_CDATA, "NUnit.Output.CDataTest", "Test CData output")]
+        public void FiresTestOutput(string xml, string expectedTest, string expectedOutput)
+        {
+            string test = null;
+            string stream = null;
+            string output = null;
+            _listener.TestOutput += (sender, args) =>
+            {
+                test = args.TestName;
+                stream = args.Stream;
+                output = args.TestOutput;
+            };
+
+            _listener.OnTestEvent(xml);
+
+            Assert.That(test, Is.Not.Null);
+            Assert.That(test, Is.EqualTo(expectedTest));
+
+            Assert.That(output, Is.Not.Null);
+            Assert.That(output, Is.EqualTo(expectedOutput));
+
+            Assert.That(stream, Is.Not.Null);
+            Assert.That(stream, Is.EqualTo("theStream"));
         }
     }
 }

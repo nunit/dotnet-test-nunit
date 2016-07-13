@@ -24,8 +24,6 @@
 using Microsoft.DotNet.InternalAbstractions;
 using Microsoft.Extensions.Testing.Abstractions;
 using Newtonsoft.Json;
-using NUnit.Common;
-using NUnit.Compatibility;
 using NUnit.Engine;
 using NUnit.Options;
 using NUnit.Runner.Interfaces;
@@ -182,7 +180,7 @@ namespace NUnit.Runner
 
                 // TODO: Run async
                 // Explore or Run
-                if (_options.List)
+                if (_options.List || _options.Explore)
                 {
                     ITestListener listener = new TestExploreListener(_testDiscoverySink, _options, assemblyPath);
                     string xml = driver.Explore(filter.Text);
@@ -191,13 +189,14 @@ namespace NUnit.Runner
                 }
                 else
                 {
-                    ITestListener listener = new TestExecutionListener(_testExecutionSink, _options, assemblyPath);
+                    TestExecutionListener listener = new TestExecutionListener(_testExecutionSink, _options, assemblyPath);
+                    SetupLabelOutput(listener);
                     string xml = driver.Run(listener.OnTestEvent, filter.Text);
                     summary.AddResult(xml);
                 }
             }
 
-            if (_options.List)
+            if (_options.List || _options.Explore)
             {
                 if (_options.DesignTime)
                     _testDiscoverySink.SendTestCompleted();
@@ -231,6 +230,72 @@ namespace NUnit.Runner
             return summary.FailedCount;
         }
 
+        void SetupLabelOutput(TestExecutionListener listener)
+        {
+            var labels = _options.DisplayTestLabels != null
+                 ? _options.DisplayTestLabels.ToUpperInvariant()
+                 : "ON";
+
+            listener.TestFinished += (sender, args) =>
+            {
+                if (labels == "ALL")
+                    WriteLabelLine(args.TestName);
+
+                if (args.TestOutput != null)
+                {
+                    if (labels == "ON")
+                        WriteLabelLine(args.TestName);
+
+                    WriteOutputLine(args.TestOutput);
+                }
+            };
+
+            listener.SuiteFinished += (sender, args) =>
+            {
+                if (args.TestOutput != null)
+                {
+                    if (labels == "ON" || labels == "ALL")
+                        WriteLabelLine(args.TestName);
+
+                    WriteOutputLine(args.TestOutput);
+                }
+            };
+
+            listener.TestOutput += (sender, args) =>
+            {
+                if (labels == "ON" && args.TestName != null)
+                    WriteLabelLine(args.TestName);
+
+                WriteOutputLine(args.TestOutput, args.Stream == "Error" ? ColorStyle.Error : ColorStyle.Output);
+            };
+        }
+
+        string _currentLabel;
+
+        void WriteLabelLine(string label)
+        {
+            if (label != _currentLabel)
+            {
+                ColorConsole.WriteLine(ColorStyle.SectionHeader, $"=> {label}");
+                _currentLabel = label;
+            }
+        }
+        private void WriteOutputLine(string text)
+        {
+            WriteOutputLine(text, ColorStyle.Output);
+        }
+
+        private void WriteOutputLine(string text, ColorStyle color)
+        {
+            ColorConsole.Write(color, text);
+
+            // Some labels were being shown on the same line as the previous output
+            if (!text.EndsWith("\n"))
+            {
+                ColorConsole.WriteLine();
+            }
+        }
+
         public void Dispose()
         {
             _socket?.Dispose();
@@ -253,36 +318,42 @@ namespace NUnit.Runner
             IDictionary<string, object> settings = new Dictionary<string, object>();
 
             if (_options.DefaultTimeout >= 0)
-                settings.Add(PackageSettings.DefaultTimeout, _options.DefaultTimeout);
+                settings.Add(FrameworkSettings.DefaultTimeout, _options.DefaultTimeout);
 
             if (_options.InternalTraceLevelSpecified)
-                settings.Add(PackageSettings.InternalTraceLevel, _options.InternalTraceLevel);
+                settings.Add(FrameworkSettings.InternalTraceLevel, _options.InternalTraceLevel);
 
             // Always add work directory, in case current directory is changed
             var workDirectory = _options.WorkDirectory ?? Directory.GetCurrentDirectory();
-            settings.Add(PackageSettings.WorkDirectory, workDirectory);
+            settings.Add(FrameworkSettings.WorkDirectory, workDirectory);
 
             if (_options.StopOnError)
-                settings.Add(PackageSettings.StopOnError, true);
+                settings.Add(FrameworkSettings.StopOnError, true);
 
 #if false
             if (options.NumberOfTestWorkersSpecified)
-                package.Add(PackageSettings.NumberOfTestWorkers, options.NumberOfTestWorkers);
+                package.Add(FrameworkSettings.NumberOfTestWorkers, options.NumberOfTestWorkers);
 #endif
 
             if (_options.RandomSeedSpecified)
-                settings.Add(PackageSettings.RandomSeed, _options.RandomSeed);
+                settings.Add(FrameworkSettings.RandomSeed, _options.RandomSeed);
 
 #if NET451
             if (_options.Debug)
             {
-                settings.Add(PackageSettings.DebugTests, true);
+                settings.Add(FrameworkSettings.DebugTests, true);
 #if false
                 if (!options.NumberOfTestWorkersSpecified)
-                    package.Add(PackageSettings.NumberOfTestWorkers, 0);
+                    package.Add(FrameworkSettings.NumberOfTestWorkers, 0);
 #endif
             }
 #endif
+
+            if (_options.DefaultTestNamePattern != null)
+                settings.Add(FrameworkSettings.DefaultTestNamePattern, _options.DefaultTestNamePattern);
+
+            if (_options.TestParameters != null)
+                settings.Add(FrameworkSettings.TestParameters, _options.TestParameters);
 
             return settings;
         }
