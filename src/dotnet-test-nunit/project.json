@@ -4,7 +4,6 @@
   "title": "NUnit .NET Core Runner",
   "description": "NUnit console and Visual Studio runner for .NET Core and .NET 4.5.1+",
   "name": "dotnet-test-nunit",
-  "projectUrl": "https://github.com/nunit/dotnet-test-nunit",
   "version": "3.3.0",
   "buildOptions": {
     "emitEntryPoint": true,
@@ -16,6 +15,7 @@
     "tags": [ "testing", "tdd", "dotnet", "core", "nunit" ],
     "iconUrl": "https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/nunit_256.png",
     "licenseUrl": "https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/LICENSE",
+    "projectUrl": "https://github.com/nunit/dotnet-test-nunit",
     "repository": {
       "type": "git",
       "url": "https://github.com/nunit/dotnet-test-nunit"
