@@ -189,12 +189,8 @@ namespace NUnit.Runner
                 }
                 else
                 {
-
-                    var labels = _options.DisplayTestLabels != null
-                         ? _options.DisplayTestLabels.ToUpperInvariant()
-                         : "ON";
-
-                    ITestListener listener = new TestExecutionListener(_testExecutionSink, _options, assemblyPath);
+                    TestExecutionListener listener = new TestExecutionListener(_testExecutionSink, _options, assemblyPath);
+                    SetupLabelOutput(listener);
                     string xml = driver.Run(listener.OnTestEvent, filter.Text);
                     summary.AddResult(xml);
                 }
@@ -234,14 +230,69 @@ namespace NUnit.Runner
             return summary.FailedCount;
         }
 
-        private string _currentLabel;
+        void SetupLabelOutput(TestExecutionListener listener)
+        {
+            var labels = _options.DisplayTestLabels != null
+                 ? _options.DisplayTestLabels.ToUpperInvariant()
+                 : "ON";
 
-        private void WriteLabelLine(string label)
+            listener.TestFinished += (sender, args) =>
+            {
+                if (labels == "ALL")
+                    WriteLabelLine(args.TestName);
+
+                if (args.TestOutput != null)
+                {
+                    if (labels == "ON")
+                        WriteLabelLine(args.TestName);
+
+                    WriteOutputLine(args.TestOutput);
+                }
+            };
+
+            listener.SuiteFinished += (sender, args) =>
+            {
+                if (args.TestOutput != null)
+                {
+                    if (labels == "ON" || labels == "ALL")
+                        WriteLabelLine(args.TestName);
+
+                    WriteOutputLine(args.TestOutput);
+                }
+            };
+
+            listener.TestOutput += (sender, args) =>
+            {
+                if (labels == "ON" && args.TestName != null)
+                    WriteLabelLine(args.TestName);
+
+                WriteOutputLine(args.TestOutput, args.Stream == "Error" ? ColorStyle.Error : ColorStyle.Output);
+            };
+        }
+
+        string _currentLabel;
+
+        void WriteLabelLine(string label)
         {
             if (label != _currentLabel)
             {
                 ColorConsole.WriteLine(ColorStyle.SectionHeader, $"=> {label}");
                 _currentLabel = label;
+            }
+        }
+        private void WriteOutputLine(string text)
+        {
+            WriteOutputLine(text, ColorStyle.Output);
+        }
+
+        private void WriteOutputLine(string text, ColorStyle color)
+        {
+            ColorConsole.Write(color, text);
+
+            // Some labels were being shown on the same line as the previous output
+            if (!text.EndsWith("\n"))
+            {
+                ColorConsole.WriteLine();
             }
         }
 

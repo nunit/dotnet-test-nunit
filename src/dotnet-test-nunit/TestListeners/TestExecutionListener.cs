@@ -23,14 +23,42 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Extensions.Testing.Abstractions;
 using NUnit.Runner.Extensions;
 
 namespace NUnit.Runner.TestListeners
 {
+    public class TestEventArgs : EventArgs
+    {
+        public string TestName { get; }
+
+        public string TestOutput { get; }
+
+        public TestEventArgs(string testName, string testOutput)
+        {
+            TestName = testName;
+            TestOutput = testOutput;
+        }
+    }
+    public class TestOutputEventArgs : TestEventArgs
+    {
+        public string Stream { get; }
+
+        public TestOutputEventArgs(string testName, string testOutput, string stream)
+            : base(testName, testOutput)
+        {
+            Stream = stream;
+        }
+    }
+
     public class TestExecutionListener : BaseTestListener
     {
+        public event EventHandler<TestEventArgs> TestFinished;
+        public event EventHandler<TestEventArgs> SuiteFinished;
+        public event EventHandler<TestOutputEventArgs> TestOutput;
+
         readonly ITestExecutionSink _sink;
 
         public TestExecutionListener(ITestExecutionSink sink, CommandLineOptions options, string assemblyPath)
@@ -47,12 +75,16 @@ namespace NUnit.Runner.TestListeners
                 case "start-suite":
                     break;
                 case "test-suite":
+                    OnTestSuite(element);
                     break;
                 case "start-test":
                     OnStartTest(element);
                     break;
                 case "test-case":
                     OnTestCase(element);
+                    break;
+                case "test-output":
+                    OnTestOutput(element);
                     break;
                 default:
                     //Console.WriteLine(xml);
@@ -71,9 +103,28 @@ namespace NUnit.Runner.TestListeners
         void OnTestCase(XElement xml)
         {
             var testResult = ParseTestResult(xml);
+            var output = testResult.Messages.Count > 0 ? testResult.Messages[0] : null;
+
+            TestFinished?.Invoke(this, new TestEventArgs(testResult.Test.FullyQualifiedName, output));
 
             if (Options.DesignTime)
                 _sink?.SendTestResult(testResult);
+        }
+
+        void OnTestSuite(XElement xml)
+        {
+            var testName = xml.Attribute("fullname")?.Value;
+            var output = xml.Elements("output").FirstOrDefault()?.Value;
+
+            SuiteFinished?.Invoke(this, new TestEventArgs(testName, output));
+        }
+
+        void OnTestOutput(XElement xml)
+        {
+            var testName = xml.Attribute("testname")?.Value;
+            var stream = xml.Attribute("stream")?.Value;
+            var output = xml.Value;
+            TestOutput?.Invoke(this, new TestOutputEventArgs(testName, output, stream));
         }
 
         protected TestResult ParseTestResult(XElement xml)
