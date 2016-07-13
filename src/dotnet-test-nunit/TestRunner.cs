@@ -189,6 +189,11 @@ namespace NUnit.Runner
                 }
                 else
                 {
+
+                    var labels = _options.DisplayTestLabels != null
+                         ? _options.DisplayTestLabels.ToUpperInvariant()
+                         : "ON";
+
                     ITestListener listener = new TestExecutionListener(_testExecutionSink, _options, assemblyPath);
                     string xml = driver.Run(listener.OnTestEvent, filter.Text);
                     summary.AddResult(xml);
@@ -227,6 +232,17 @@ namespace NUnit.Runner
 
             // Return the number of test failures
             return summary.FailedCount;
+        }
+
+        private string _currentLabel;
+
+        private void WriteLabelLine(string label)
+        {
+            if (label != _currentLabel)
+            {
+                ColorConsole.WriteLine(ColorStyle.SectionHeader, $"=> {label}");
+                _currentLabel = label;
+            }
         }
 
         public void Dispose()

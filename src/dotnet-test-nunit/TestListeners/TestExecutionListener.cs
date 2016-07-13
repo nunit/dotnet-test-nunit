@@ -45,6 +45,7 @@ namespace NUnit.Runner.TestListeners
             switch (element?.Name?.LocalName)
             {
                 case "start-suite":
+                    break;
                 case "test-suite":
                     break;
                 case "start-test":

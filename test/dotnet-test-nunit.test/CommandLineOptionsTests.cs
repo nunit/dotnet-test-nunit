@@ -88,8 +88,6 @@ namespace NUnit.Runner.Test
         }
 
         [TestCase("WhereClause", "where", new string[] { "cat==Fast" }, new string[0])]
-        [TestCase("OutFile", "output|out", new string[] { "output.txt" }, new string[0])]
-        [TestCase("ErrFile", "err", new string[] { "error.txt" }, new string[0])]
         [TestCase("WorkDirectory", "work", new string[] { "results" }, new string[0])]
         [TestCase("DisplayTestLabels", "labels", new string[] { "Off", "On", "All" }, new string[] { "JUNK" })]
         [TestCase("InternalTraceLevel", "trace", new string[] { "Off", "Error", "Warning", "Info", "Debug", "Verbose" }, new string[] { "JUNK" })]
@@ -156,8 +154,6 @@ namespace NUnit.Runner.Test
 
         [TestCase("--where")]
         [TestCase("--timeout")]
-        [TestCase("--output")]
-        [TestCase("--err")]
         [TestCase("--work")]
         [TestCase("--trace")]
         [TestCase("--port")]

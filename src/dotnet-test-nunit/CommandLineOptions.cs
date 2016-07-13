@@ -105,14 +105,6 @@ namespace NUnit.Runner
 
         public bool NoColor { get; private set; }
 
-        public bool Verbose { get; private set; }
-
-        public string OutFile { get; private set; }
-        public bool OutFileSpecified => OutFile != null;
-
-        public string ErrFile { get; private set; }
-        public bool ErrFileSpecified => ErrFile != null;
-
         public string DisplayTestLabels { get; private set; }
 
         string workDirectory = null;
@@ -122,9 +114,6 @@ namespace NUnit.Runner
 
         public string InternalTraceLevel { get; private set; }
         public bool InternalTraceLevelSpecified => InternalTraceLevel != null;
-
-        /// <summary>Indicates whether a full report should be displayed.</summary>
-        public bool Full { get; private set; }
 
         private List<OutputSpecification> resultOutputSpecifications = new List<OutputSpecification>();
         public IList<OutputSpecification> ResultOutputSpecifications
@@ -276,15 +265,6 @@ namespace NUnit.Runner
             this.Add("work=", "{PATH} of the directory to use for output files. If not specified, defaults to the current directory.",
                 v => workDirectory = RequiredValue(v, "--work"));
 
-            this.Add("output|out=", "File {PATH} to contain text output from the tests.",
-                v => OutFile = RequiredValue(v, "--output"));
-
-            this.Add("err=", "File {PATH} to contain error output from the tests.",
-                v => ErrFile = RequiredValue(v, "--err"));
-
-            this.Add("full", "Prints full report of all test results.",
-                v => Full = v != null);
-
             this.Add("result=", "An output {SPEC} for saving the test results.\nThis option may be repeated.",
                 v => resultOutputSpecifications.Add(new OutputSpecification(RequiredValue(v, "--resultxml"))));
 
@@ -313,10 +293,7 @@ namespace NUnit.Runner
             this.Add("nocolor|noc", "Displays console output without color.",
                 v => NoColor = v != null);
 
-            this.Add("verbose|v", "Display additional information as the test runs.",
-                v => Verbose = v != null);
-
-            this.Add("help|h", "Display this message and exit.",
+            this.Add("help|h|?", "Display this message and exit.",
                 v => ShowHelp = v != null);
 
             this.Add("version|V", "Display the header and exit.",
