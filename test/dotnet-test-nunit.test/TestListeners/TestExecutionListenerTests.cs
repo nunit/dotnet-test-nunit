@@ -31,6 +31,9 @@ namespace NUnit.Runner.Test.TestListeners
     [TestFixture]
     public class TestExecutionListenerTests
     {
+        const string STARTED_TEST_CASE_XML =
+            "<start-test id=\"1006\" name=\"CanSubtract(-1,-1,0)\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests.CanSubtract(-1,-1,0)\" methodname=\"CanSubtract\" classname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Runnable\" seed=\"1663476057\" start-time=\"2016-06-06 23:31:34Z\" />";
+
         const string SUCCESS_TEST_CASE_XML =
             "<test-case id=\"1006\" name=\"CanSubtract(-1,-1,0)\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests.CanSubtract(-1,-1,0)\" methodname=\"CanSubtract\" classname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Runnable\" seed=\"1663476057\" result=\"Passed\" start-time=\"2016-06-06 23:31:34Z\" end-time=\"2016-06-06 23:31:34Z\" duration=\"0.000001\" asserts=\"1\" />";
 
@@ -273,6 +276,22 @@ namespace NUnit.Runner.Test.TestListeners
 
             Assert.That(stream, Is.Not.Null);
             Assert.That(stream, Is.EqualTo("theStream"));
+        }
+
+        [Test]
+        public void TestStarted()
+        {            
+            bool raised = false;
+
+            var eventHandler =
+                new EventHandler<TestEventArgs>((sender, args) => raised = true);
+            _listener.TestStarted += eventHandler;
+
+            _listener.OnTestEvent(STARTED_TEST_CASE_XML);
+
+            Assert.That(raised, Is.True);
+
+            _listener.TestFinished -= eventHandler;
         }
     }
 }
