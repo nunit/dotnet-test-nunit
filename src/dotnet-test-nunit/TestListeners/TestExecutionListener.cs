@@ -103,7 +103,14 @@ namespace NUnit.Runner.TestListeners
         void OnTestCase(XElement xml)
         {
             var testResult = ParseTestResult(xml);
-            var output = testResult.Messages.Count > 0 ? testResult.Messages[0] : null;
+
+            string output = null;
+
+            if (testResult.Messages.Count > 0)
+                output = testResult.Messages[0];
+            else if (testResult.Outcome != TestOutcome.None)
+                output = testResult.Outcome.ToString();
+            
 
             TestFinished?.Invoke(this, new TestEventArgs(testResult.Test.FullyQualifiedName, output));
 
