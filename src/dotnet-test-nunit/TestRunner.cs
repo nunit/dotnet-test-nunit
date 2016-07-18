@@ -236,11 +236,14 @@ namespace NUnit.Runner
                  ? _options.DisplayTestLabels.ToUpperInvariant()
                  : "ON";
 
-            listener.TestFinished += (sender, args) =>
+            listener.TestStarted += (sender, args) =>
             {
                 if (labels == "ALL")
                     WriteLabelLine(args.TestName);
+            };
 
+            listener.TestFinished += (sender, args) =>
+            {                
                 if (args.TestOutput != null)
                 {
                     if (labels == "ON")
