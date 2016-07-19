@@ -460,7 +460,7 @@ namespace NUnit.Runner.Test
             Assert.That(options.ErrorMessages.Count, Is.EqualTo(1));
         }
 
-        [Test]
+        [Test, Explicit]
         public void DisplayTestParameters()
         {
             if (TestContext.Parameters.Count == 0)
