@@ -21,6 +21,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
+using System;
 using Microsoft.Extensions.Testing.Abstractions;
 using NUnit.Framework;
 using NUnit.Runner.TestListeners;
@@ -30,6 +31,9 @@ namespace NUnit.Runner.Test.TestListeners
     [TestFixture]
     public class TestExecutionListenerTests
     {
+        const string STARTED_TEST_CASE_XML =
+            "<start-test id=\"1006\" name=\"CanSubtract(-1,-1,0)\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests.CanSubtract(-1,-1,0)\" methodname=\"CanSubtract\" classname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Runnable\" seed=\"1663476057\" start-time=\"2016-06-06 23:31:34Z\" />";
+
         const string SUCCESS_TEST_CASE_XML =
             "<test-case id=\"1006\" name=\"CanSubtract(-1,-1,0)\" fullname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests.CanSubtract(-1,-1,0)\" methodname=\"CanSubtract\" classname=\"NUnitWithDotNetCoreRC2.Test.CalculatorTests\" runstate=\"Runnable\" seed=\"1663476057\" result=\"Passed\" start-time=\"2016-06-06 23:31:34Z\" end-time=\"2016-06-06 23:31:34Z\" duration=\"0.000001\" asserts=\"1\" />";
 
@@ -108,7 +112,12 @@ namespace NUnit.Runner.Test.TestListeners
         [Test]
         public void CanParseSuccess()
         {
+            var eventHandler =
+                new EventHandler<TestEventArgs>((sender, args) => Assert.That(args.TestOutput, Is.EqualTo("Passed")));
+            _listener.TestFinished += eventHandler;
+
             _listener.OnTestEvent(SUCCESS_TEST_CASE_XML);
+            
             var testResult = _sink.TestResult;
             Assert.That(testResult, Is.Not.Null);
             Assert.That(testResult.ErrorMessage, Is.Null.Or.Empty);
@@ -117,11 +126,17 @@ namespace NUnit.Runner.Test.TestListeners
             Assert.That(testResult.StartTime.Hour, Is.EqualTo(23));
             Assert.That(testResult.EndTime.Minute, Is.EqualTo(31));
             Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.000001d).Within(0.001d));
+
+            _listener.TestFinished -= eventHandler;
         }
 
         [Test]
         public void CanParseIgnoredTests()
         {
+            var eventHandler =
+                new EventHandler<TestEventArgs>((sender, args) => Assert.That(args.TestOutput, Is.EqualTo("Skipped")));
+            _listener.TestFinished += eventHandler;
+
             _listener.OnTestEvent(IGNORE_TEST_CASE_XML);
             var testResult = _sink.TestResult;
             Assert.That(testResult, Is.Not.Null);
@@ -131,11 +146,17 @@ namespace NUnit.Runner.Test.TestListeners
             Assert.That(testResult.StartTime.Hour, Is.EqualTo(23));
             Assert.That(testResult.EndTime.Minute, Is.EqualTo(45));
             Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.000001d).Within(0.001d));
+
+            _listener.TestFinished -= eventHandler;
         }
 
         [Test]
         public void CanParseExplicitTests()
         {
+            var eventHandler =
+                new EventHandler<TestEventArgs>((sender, args) => Assert.That(args.TestOutput, Is.EqualTo("Skipped")));
+            _listener.TestFinished += eventHandler;
+
             _listener.OnTestEvent(EXPLICIT_TEST_CASE_XML);
             var testResult = _sink.TestResult;
             Assert.That(testResult, Is.Not.Null);
@@ -145,11 +166,17 @@ namespace NUnit.Runner.Test.TestListeners
             Assert.That(testResult.StartTime.Hour, Is.EqualTo(23));
             Assert.That(testResult.EndTime.Minute, Is.EqualTo(45));
             Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.000001d).Within(0.001d));
+
+            _listener.TestFinished -= eventHandler;
         }
 
         [Test]
         public void CanParseTestErrors()
         {
+            var eventHandler =
+                new EventHandler<TestEventArgs>((sender, args) => Assert.That(args.TestOutput, Is.EqualTo("Failed")));
+            _listener.TestFinished += eventHandler;
+
             _listener.OnTestEvent(ERROR_TEST_CASE_XML);
             var testResult = _sink.TestResult;
             Assert.That(testResult, Is.Not.Null);
@@ -159,11 +186,17 @@ namespace NUnit.Runner.Test.TestListeners
             Assert.That(testResult.StartTime.Hour, Is.EqualTo(19));
             Assert.That(testResult.EndTime.Minute, Is.EqualTo(57));
             Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.023031).Within(0.001d));
+
+            _listener.TestFinished -= eventHandler;
         }
 
         [Test]
         public void CanParseTestFailures()
         {
+            var eventHandler =
+                new EventHandler<TestEventArgs>((sender, args) => Assert.That(args.TestOutput, Is.EqualTo("Failed")));
+            _listener.TestFinished += eventHandler;
+
             _listener.OnTestEvent(FAILED_TEST_CASE_XML);
             var testResult = _sink.TestResult;
             Assert.That(testResult, Is.Not.Null);
@@ -173,6 +206,8 @@ namespace NUnit.Runner.Test.TestListeners
             Assert.That(testResult.StartTime.Hour, Is.EqualTo(19));
             Assert.That(testResult.EndTime.Minute, Is.EqualTo(57));
             Assert.That(testResult.Duration.TotalSeconds, Is.EqualTo(0.017533).Within(0.001d));
+
+            _listener.TestFinished -= eventHandler;
         }
 
         [Test]
@@ -241,6 +276,22 @@ namespace NUnit.Runner.Test.TestListeners
 
             Assert.That(stream, Is.Not.Null);
             Assert.That(stream, Is.EqualTo("theStream"));
+        }
+
+        [Test]
+        public void TestStarted()
+        {            
+            bool raised = false;
+
+            var eventHandler =
+                new EventHandler<TestEventArgs>((sender, args) => raised = true);
+            _listener.TestStarted += eventHandler;
+
+            _listener.OnTestEvent(STARTED_TEST_CASE_XML);
+
+            Assert.That(raised, Is.True);
+
+            _listener.TestFinished -= eventHandler;
         }
     }
 }
