@@ -95,7 +95,7 @@ namespace NUnit.Runner.Test.Extensions
         public void IgnoredTestsHaveDurationOf1Tick(string duration, double expected)
         {
             var durationAttr = new XAttribute("duration", duration);
-            var outcomeAttr = TestOutcome.Failed;
+            var outcomeAttr = TestOutcome.Skipped;
 
             var ts = durationAttr.ConvertToTimeSpan(outcomeAttr);
             Assert.That(ts.TotalSeconds, Is.EqualTo(expected).Within(0.001d));
