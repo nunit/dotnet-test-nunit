@@ -72,11 +72,14 @@ namespace NUnit.Runner.Extensions
         /// </summary>
         /// <param name="attribute"></param>
         /// <returns></returns>
-        public static TimeSpan ConvertToTimeSpan(this XAttribute attribute)
+        public static TimeSpan ConvertToTimeSpan(this XAttribute attribute, TestOutcome outcome)
         {
             double duration = MIN_DURATION; // Some runners cannot handle a duration of 0
 
-            if(attribute != null)
+            if (outcome == TestOutcome.Skipped)
+                return TimeSpan.FromTicks(1);
+
+            if (attribute != null)
                 double.TryParse(attribute.Value, out duration);
 
             return TimeSpan.FromSeconds(Math.Max(duration, MIN_DURATION));

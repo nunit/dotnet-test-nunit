@@ -139,12 +139,14 @@ namespace NUnit.Runner.TestListeners
         protected TestResult ParseTestResult(XElement xml)
         {
             var test = ParseTest(xml);
+            var outcomeAttr = xml.Attribute("result").ConvertToTestOutcome();
+
             var testResult = new TestResult(test)
             {
                 StartTime = xml.Attribute("start-time").ConvertToDateTime(),
                 EndTime = xml.Attribute("end-time").ConvertToDateTime(),
-                Duration = xml.Attribute("duration").ConvertToTimeSpan(),
-                Outcome = xml.Attribute("result").ConvertToTestOutcome(),
+                Outcome = outcomeAttr,
+                Duration = xml.Attribute("duration").ConvertToTimeSpan(outcomeAttr),
                 ComputerName = Environment.MachineName
             };
             // Output, Messages and stack traces
