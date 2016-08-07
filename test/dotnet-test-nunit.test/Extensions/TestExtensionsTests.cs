@@ -83,8 +83,21 @@ namespace NUnit.Runner.Test.Extensions
         [TestCase("", 0.001d, Description = "Default TimeSpan of 1 ms")]
         public void CanConvertDurations(string duration, double expected)
         {
-            var attr = new XAttribute("duration", duration);
-            var ts = attr.ConvertToTimeSpan();
+            var durationAttr = new XAttribute("duration", duration);
+            var outcomeAttr = TestOutcome.Passed;
+
+            var ts = durationAttr.ConvertToTimeSpan(outcomeAttr);
+            Assert.That(ts.TotalSeconds, Is.EqualTo(expected).Within(0.001d));
+        }
+
+        [TestCase("1", 0.0000001d)]
+        [TestCase("", 0.0000001d)]
+        public void IgnoredTestsHaveDurationOf1Tick(string duration, double expected)
+        {
+            var durationAttr = new XAttribute("duration", duration);
+            var outcomeAttr = TestOutcome.Skipped;
+
+            var ts = durationAttr.ConvertToTimeSpan(outcomeAttr);
             Assert.That(ts.TotalSeconds, Is.EqualTo(expected).Within(0.001d));
         }
 
