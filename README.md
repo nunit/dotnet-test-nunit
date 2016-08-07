@@ -37,9 +37,7 @@ Your `project.json` in your test project should look like the following;
 }
 ```
 
-The lines of interest here are the dependency on `dotnet-test-nunit`. Note that the `NUnitWithDotNetCoreRC2` dependency is the project under test.
-
-I have added `"testRunner": "nunit"` to specify NUnit 3 as the test adapter. I also had to add to the imports for both the test adapter and NUnit to resolve.
+The lines of interest here are the dependency on `dotnet-test-nunit`. I have added `"testRunner": "nunit"` to specify NUnit 3 as the test adapter. I also had to add to the imports for both the test adapter and NUnit to resolve.
 
 You can now run your tests using the Visual Studio Test Explorer, or by running `dotnet test` from the command line.
 
