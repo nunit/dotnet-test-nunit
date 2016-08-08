@@ -18,7 +18,7 @@ Your `project.json` in your test project should look like the following;
 
     "dependencies": {
         "NUnit": "3.4.1",
-        "dotnet-test-nunit": "3.4.0-beta-1"
+        "dotnet-test-nunit": "3.4.0-beta-2"
     },
 
     "testRunner": "nunit",
