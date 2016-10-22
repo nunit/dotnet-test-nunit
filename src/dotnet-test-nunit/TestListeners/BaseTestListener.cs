@@ -66,7 +66,7 @@ namespace NUnit.Runner.TestListeners
             //Visual Studio and causes tests to get all whacked up. 
             //This is a fix for dotnet-test-nunit#58
             string uniqueName = xml.Attribute("id").ToString() + _assemblyPath;
-            Guid testSignature = uniqueName.ConvertToGuid();
+            Guid testSignature = uniqueName.GetSignatureAsGuid();
 
             var test = new Test
             {

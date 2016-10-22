@@ -42,11 +42,20 @@ namespace NUnit.Runner.Extensions
         static SHA1 SHA { get; } = SHA1.Create();
 
         /// <summary>
-        /// Takes an NUnit fullname attribute and converts it to a Guid Id
+        /// Takes a string, signs it with a SHA1 algorithm and converts the 
+        /// resulting hash to a <see cref="Guid"/> 
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The SHA1 hash algorithm results in a 140 bit digest, but a 
+        /// Guid only stores 128 bits.  Therefore, we are tossing out
+        /// the last 12 bits of the SHA1 hash in order to convert the
+        /// result to a Guid.
+        /// </para>
+        /// </remarks>
         /// <param name="attribute"></param>
         /// <returns></returns>
-        public static Guid ConvertToGuid(this string attribute)
+        public static Guid GetSignatureAsGuid(this string attribute)
         {
             var hash = SHA.ComputeHash(Encoding.Unicode.GetBytes(attribute));
             var b = new byte[16];
