@@ -42,6 +42,19 @@ namespace NUnit.Runner.Extensions
         static SHA1 SHA { get; } = SHA1.Create();
 
         /// <summary>
+        /// Takes an NUnit fullname attribute and converts it to a Guid Id
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
+        public static Guid ConvertToGuid(this string attribute)
+        {
+            var hash = SHA.ComputeHash(Encoding.Unicode.GetBytes(attribute));
+            var b = new byte[16];
+            Array.Copy(hash, b, 16);
+            return new Guid(b);
+        }
+
+        /// <summary>
         /// Takes an NUnit id attribute and converts it to a Guid Id
         /// </summary>
         /// <param name="attribute"></param>
