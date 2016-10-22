@@ -57,23 +57,20 @@ namespace NUnit.Runner.TestListeners
             var methodName = xml.Attribute("methodname")?.Value;
             var sourceData = _provider?.GetSourceData(className, methodName);
 
-            //if we have a "fullname" then use it to generate 
-            //a unique identifier for the test otherwise, use 
-            //the id to generate a unique id.  The id from the 
+            //use the _assemblyPath plus the Id attribute to
+            //generate a unique signature for this test.
+            //Before, just the id was used, but the id from the 
             //xml attribute is not sufficient, because different 
             //projects in the same solution will generate the same
             //id.  In "Design" mode, this causes a conflict within 
             //Visual Studio and causes tests to get all whacked up. 
             //This is a fix for dotnet-test-nunit#58
-            Guid uniqueId;
-            if (xml.Attribute("fullname") != null)
-                uniqueId = xml.Attribute("fullname").Value.ConvertToGuid();
-            else
-                uniqueId = xml.Attribute("id").ConvertToGuid();
+            string uniqueName = xml.Attribute("id").ToString() + _assemblyPath;
+            Guid testSignature = uniqueName.ConvertToGuid();
 
             var test = new Test
             {
-                Id = uniqueId,
+                Id = testSignature,
                 DisplayName = xml.Attribute("name")?.Value ?? "",
                 FullyQualifiedName = xml.Attribute("fullname")?.Value ?? "",
                 CodeFilePath = sourceData?.Filename,
