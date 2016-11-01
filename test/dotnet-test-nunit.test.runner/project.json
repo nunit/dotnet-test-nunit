@@ -11,7 +11,7 @@
   },
 
   "dependencies": {
-    "NUnitLite": "3.4.0",
+    "NUnitLite": "3.5.0",
     "dotnet-test-nunit": {
       "target": "project"
     },

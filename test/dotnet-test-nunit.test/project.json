@@ -10,7 +10,7 @@
   },
 
   "dependencies": {
-    "NUnit": "3.4.0",
+    "NUnit": "3.5.0",
     "dotnet-test-nunit": {
       "target": "project"
     }
