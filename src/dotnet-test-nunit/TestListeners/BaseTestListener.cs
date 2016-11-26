@@ -77,7 +77,7 @@ namespace NUnit.Runner.TestListeners
             //test ID, then visual Studio will ignore the new 
             //FullyQualifiedName returned during test discovery.  
             //While it ignores the new FullyQualifiedName, it will
-            //update the DisplayName, which made degugging this
+            //update the DisplayName, which made debugging this
             //very frustrating.  Nonetheless, to force a new
             //guid, we use the fullname of the testcase in the 
             //Guid/signature generation.
