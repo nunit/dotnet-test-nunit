@@ -95,6 +95,8 @@ namespace NUnit.Runner
 
         public bool WaitBeforeExit { get; private set; }
 
+        public bool TeamCity { get; private set; }
+
 #if NET451
         public bool Debug { get; private set; }
 #endif
@@ -292,6 +294,9 @@ namespace NUnit.Runner
 
             this.Add("nocolor|noc", "Displays console output without color.",
                 v => NoColor = v != null);
+
+            this.Add("teamcity|tc", "Enables teamcity tests processing messages.",
+                v => TeamCity = v != null);
 
             this.Add("help|h|?", "Display this message and exit.",
                 v => ShowHelp = v != null);
