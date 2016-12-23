@@ -21,14 +21,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-using System;
 using System.Xml;
-
-namespace System.Runtime.CompilerServices
-{
-    [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method)]
-    sealed class ExtensionAttribute : Attribute { }
-}
 
 namespace NUnit.Engine.Listeners
 {
