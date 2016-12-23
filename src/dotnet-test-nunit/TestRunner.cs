@@ -41,6 +41,8 @@ using System;
 
 namespace NUnit.Runner
 {
+    using NUnit.Engine.Listeners;
+
     public class TestRunner : IDisposable
     {
         CommandLineOptions _options;
@@ -189,9 +191,19 @@ namespace NUnit.Runner
                 }
                 else
                 {
+                    var tcListener = new TeamCityEventListener();
                     TestExecutionListener listener = new TestExecutionListener(_testExecutionSink, _options, assemblyPath);
                     SetupLabelOutput(listener);
-                    string xml = driver.Run(listener.OnTestEvent, filter.Text);
+                    string xml = driver.Run(
+                        report =>
+                            {
+                                listener.OnTestEvent(report);
+                                if (_options.TeamCity)
+                                {
+                                    tcListener.OnTestEvent(report);
+                                }
+                            },
+                        filter.Text);
                     summary.AddResult(xml);
                 }
             }
