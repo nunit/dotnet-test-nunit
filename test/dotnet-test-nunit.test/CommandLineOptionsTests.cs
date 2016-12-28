@@ -22,6 +22,7 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using NUnit.Engine;
@@ -426,7 +427,7 @@ namespace NUnit.Runner.Test
         {
             var options = new CommandLineOptions("--params=X=5");
             Assert.That(options.ErrorMessages, Is.Empty);
-            Assert.That(options.TestParameters, Is.EqualTo("X=5"));
+            Assert.That(options.TestParameters, Is.EqualTo(new Dictionary<string, string> { { "X", "5" } }));
         }
 
         [Test]
@@ -434,7 +435,7 @@ namespace NUnit.Runner.Test
         {
             var options = new CommandLineOptions("--params:X=5;Y=7");
             Assert.That(options.ErrorMessages, Is.Empty);
-            Assert.That(options.TestParameters, Is.EqualTo("X=5;Y=7"));
+            Assert.That(options.TestParameters, Is.EqualTo(new Dictionary<string, string> { { "X", "5" }, { "Y", "7" } }));
         }
 
         [Test]
@@ -442,7 +443,7 @@ namespace NUnit.Runner.Test
         {
             var options = new CommandLineOptions("-p:X=5", "-p:Y=7");
             Assert.That(options.ErrorMessages, Is.Empty);
-            Assert.That(options.TestParameters, Is.EqualTo("X=5;Y=7"));
+            Assert.That(options.TestParameters, Is.EqualTo(new Dictionary<string, string> { { "X", "5" }, { "Y", "7" } }));
         }
 
         [Test]
@@ -450,7 +451,7 @@ namespace NUnit.Runner.Test
         {
             var options = new CommandLineOptions("--params:X=5;Y=7", "-p:Z=3");
             Assert.That(options.ErrorMessages, Is.Empty);
-            Assert.That(options.TestParameters, Is.EqualTo("X=5;Y=7;Z=3"));
+            Assert.That(options.TestParameters, Is.EqualTo(new Dictionary<string, string> { { "X", "5" }, { "Y", "7" }, { "Z", "3" } }));
         }
 
         [Test]

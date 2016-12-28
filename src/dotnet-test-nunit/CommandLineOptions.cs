@@ -73,7 +73,7 @@ namespace NUnit.Runner
 
         public IList<string> TestList { get; } = new List<string>();
 
-        public string TestParameters { get; private set; }
+        public IDictionary<string, string> TestParameters { get; } = new Dictionary<string, string>();
 
         public string WhereClause { get; private set; }
         public bool WhereClauseSpecified => WhereClause != null;
@@ -236,16 +236,22 @@ namespace NUnit.Runner
                 {
                     string parameters = RequiredValue(v, "--params");
 
+                    // This can be changed without breaking backwards compatibility with frameworks.
                     foreach (string param in parameters.Split(new[] { ';' }))
                     {
-                        if (!param.Contains("="))
+                        int eq = param.IndexOf("=");
+                        if (eq == -1 || eq == param.Length - 1)
+                        {
                             ErrorMessages.Add("Invalid format for test parameter. Use NAME=VALUE.");
-                    }
+                        }
+                        else
+                        {
+                            string name = param.Substring(0, eq);
+                            string val = param.Substring(eq + 1);
 
-                    if (TestParameters == null)
-                        TestParameters = parameters;
-                    else
-                        TestParameters += ";" + parameters;
+                            TestParameters[name] = val;
+                        }
+                    }
                 });
 
             this.Add("timeout=", "Set timeout for each test case in {MILLISECONDS}.",

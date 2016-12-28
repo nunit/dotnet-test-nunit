@@ -36,6 +36,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Xml.Linq;
 using System;
 
@@ -367,10 +368,30 @@ namespace NUnit.Runner
             if (_options.DefaultTestNamePattern != null)
                 settings.Add(FrameworkSettings.DefaultTestNamePattern, _options.DefaultTestNamePattern);
 
-            if (_options.TestParameters != null)
-                settings.Add(FrameworkSettings.TestParameters, _options.TestParameters);
+            if (_options.TestParameters.Count != 0)
+                SetTestParameters(settings, _options.TestParameters);
 
             return settings;
+        }
+
+        /// <summary>
+        /// Sets test parameters, handling backwards compatibility.
+        /// </summary>
+        private static void SetTestParameters(IDictionary<string, object> settings, IDictionary<string, string> testParameters)
+        {
+            settings[FrameworkSettings.TestParametersDictionary] = testParameters;
+
+            if (testParameters.Count != 0)
+            {
+                // This cannot be changed without breaking backwards compatibility with old frameworks.
+                // Reserializes the way old frameworks understand, even if this runner's parsing is changed.
+
+                var oldFrameworkSerializedParameters = new StringBuilder();
+                foreach (var parameter in testParameters)
+                    oldFrameworkSerializedParameters.Append(parameter.Key).Append('=').Append(parameter.Value).Append(';');
+
+                settings[FrameworkSettings.TestParameters] = oldFrameworkSerializedParameters.ToString(0, oldFrameworkSerializedParameters.Length - 1);
+            }
         }
 
         TestFilter CreateTestFilter(IEnumerable<string> testList)
