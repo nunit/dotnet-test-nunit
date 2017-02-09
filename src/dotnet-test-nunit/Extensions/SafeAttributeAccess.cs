@@ -8,10 +8,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -21,6 +21,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
+using System;
+using System.Globalization;
 using System.Xml;
 
 namespace NUnit.Engine.Listeners
@@ -41,6 +43,48 @@ namespace NUnit.Engine.Listeners
             XmlAttribute attr = result.Attributes[name];
 
             return attr == null ? null : attr.Value;
+        }
+
+        /// <summary>
+        /// Gets the value of the given attribute as a double.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
+        public static double GetAttribute(this XmlNode result, string name, double defaultValue)
+        {
+            if (result.Attributes == null)
+            {
+                throw new ArgumentNullException(nameof(result), "The result don't have any attribute.");
+            }
+
+            var attr = result.Attributes[name];
+            return attr == null ? defaultValue : double.Parse(attr.Value, CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Gets the value of the given attribute as a DateTime.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns></returns>
+        public static DateTime GetAttribute(this XmlNode result, string name, DateTime defaultValue)
+        {
+            var dateStr = GetAttribute(result, name);
+            if (dateStr == null)
+            {
+                return defaultValue;
+            }
+
+            DateTime date;
+            if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AllowWhiteSpaces, out date))
+            {
+                return date;
+            }
+
+            return defaultValue;
         }
     }
 }

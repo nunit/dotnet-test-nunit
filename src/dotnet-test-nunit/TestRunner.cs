@@ -41,7 +41,10 @@ using System;
 
 namespace NUnit.Runner
 {
+    using System.Xml;
+
     using NUnit.Engine.Listeners;
+    using NUnit.Runner.TestResultConverter;
 
     public class TestRunner : IDisposable
     {
@@ -416,13 +419,22 @@ namespace NUnit.Runner
                     continue;
                 }
 
-                var outputPath = System.IO.Path.Combine(_workDirectory, spec.OutputPath);
+                var outputPath = Path.Combine(_workDirectory, spec.OutputPath);
                 try
                 {
                     using (var writer = new FileStream(outputPath, FileMode.Create))
+                    {
+
                         testResults.Save(writer);
+                    }
 
                     ColorConsole.WriteLine(ColorStyle.Default, $"Results saved as {outputPath}");
+
+                    if (_options.ConvertToV2)
+                    {
+                        var x = XDocument.Load(outputPath);
+                        new NUnit2XmlResultWriter().WriteResultFile(x, outputPath + ".nunit2.xml");
+                    }
                 }
                 catch (Exception ex)
                 {

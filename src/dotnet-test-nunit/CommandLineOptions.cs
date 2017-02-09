@@ -137,8 +137,9 @@ namespace NUnit.Runner
         // Error Processing
 
         public IList<string> ErrorMessages { get; private set; } = new List<string>();
+        public bool ConvertToV2 { get; private set; }
 
-#endregion
+        #endregion
 
         #region Public Methods
 
@@ -269,6 +270,8 @@ namespace NUnit.Runner
 
             this.Add("result=", "An output {SPEC} for saving the test results.\nThis option may be repeated.",
                 v => resultOutputSpecifications.Add(new OutputSpecification(RequiredValue(v, "--resultxml"))));
+
+            this.Add("convert-to-v2", "Converts de result xml file to v2 pattern.", v => ConvertToV2 = !string.IsNullOrWhiteSpace(v));
 
             this.Add("explore:", "Display or save test info rather than running tests. Optionally provide an output {SPEC} for saving the test info. This option may be repeated.", v =>
             {

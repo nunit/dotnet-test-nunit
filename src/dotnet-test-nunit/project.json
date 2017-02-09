@@ -4,7 +4,7 @@
   "title": "NUnit .NET Core Runner",
   "description": "NUnit console and Visual Studio runner for .NET Core and .NET 4.5.1+",
   "name": "dotnet-test-nunit",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "buildOptions": {
     "emitEntryPoint": true,
     "preserveCompilationContext": true,
@@ -23,8 +23,8 @@
   },
 
   "dependencies": {
-    "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview2-003121",
     "Microsoft.Extensions.DependencyModel": "1.0.0",
+    "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview2-003121",
     "NUnit.Portable.Agent": "3.4.0-beta-3"
   },
 
