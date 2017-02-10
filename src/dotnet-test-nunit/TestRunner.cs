@@ -42,6 +42,7 @@ using System;
 namespace NUnit.Runner
 {
     using NUnit.Engine.Listeners;
+    using Result.Writer.V2;
 
     public class TestRunner : IDisposable
     {
@@ -403,26 +404,34 @@ namespace NUnit.Runner
         {
             foreach (var spec in _options.ResultOutputSpecifications)
             {
-                // Report on unsupported specifications instead of failing
-                if (spec.Format != "nunit3")
-                {
-                    ColorConsole.WriteLine(ColorStyle.Error, $"Only NUnit 3 test results are supported, skipping {spec.Format}");
-                    continue;
-                }
-
                 if (!string.IsNullOrWhiteSpace(spec.Transform))
                 {
                     ColorConsole.WriteLine(ColorStyle.Error, $"XML Transforms are not currently supported, skipping");
                     continue;
                 }
 
-                var outputPath = System.IO.Path.Combine(_workDirectory, spec.OutputPath);
+                var outputPath = Path.Combine(_workDirectory, spec.OutputPath);
                 try
                 {
                     using (var writer = new FileStream(outputPath, FileMode.Create))
                         testResults.Save(writer);
 
                     ColorConsole.WriteLine(ColorStyle.Default, $"Results saved as {outputPath}");
+
+                    // Report on unsupported specifications instead of failing
+                    if ("NUNIT2".Equals(spec.Format.ToUpperInvariant()))
+                    {
+                        var v2OutputPath = Path.Combine(
+                            _workDirectory,
+                            $"{Path.GetFileNameWithoutExtension(spec.OutputPath)}.v2{Path.GetExtension(spec.OutputPath)}");
+
+                        new NUnit2XmlResultWriter().WriteResultFile(outputPath, $"{v2OutputPath}");
+                        ColorConsole.WriteLine(ColorStyle.Default, $"Results with v2 format saved as {v2OutputPath}");
+                    }
+                    else if (!"NUNIT3".Equals(spec.Format.ToUpperInvariant()))
+                    {
+                        ColorConsole.WriteLine(ColorStyle.Error, $"'{spec.Format}' format is not supported.");
+                    }
                 }
                 catch (Exception ex)
                 {
