@@ -41,10 +41,8 @@ using System;
 
 namespace NUnit.Runner
 {
-    using System.Xml;
-
     using NUnit.Engine.Listeners;
-    using NUnit.Runner.TestResultConverter;
+    using Result.Writer.V2;
 
     public class TestRunner : IDisposable
     {
@@ -406,13 +404,6 @@ namespace NUnit.Runner
         {
             foreach (var spec in _options.ResultOutputSpecifications)
             {
-                // Report on unsupported specifications instead of failing
-                if (spec.Format != "nunit3")
-                {
-                    ColorConsole.WriteLine(ColorStyle.Error, $"Only NUnit 3 test results are supported, skipping {spec.Format}");
-                    continue;
-                }
-
                 if (!string.IsNullOrWhiteSpace(spec.Transform))
                 {
                     ColorConsole.WriteLine(ColorStyle.Error, $"XML Transforms are not currently supported, skipping");
@@ -423,17 +414,19 @@ namespace NUnit.Runner
                 try
                 {
                     using (var writer = new FileStream(outputPath, FileMode.Create))
-                    {
-
                         testResults.Save(writer);
-                    }
 
                     ColorConsole.WriteLine(ColorStyle.Default, $"Results saved as {outputPath}");
 
-                    if (_options.ConvertToV2)
+                    // Report on unsupported specifications instead of failing
+                    if ("NUNIT2".Equals(spec.Format.ToUpperInvariant()))
                     {
-                        var x = XDocument.Load(outputPath);
-                        new NUnit2XmlResultWriter().WriteResultFile(x, outputPath + ".nunit2.xml");
+                        var v2OutputPath = Path.Combine(
+                            _workDirectory,
+                            $"{Path.GetFileNameWithoutExtension(spec.OutputPath)}.v2{Path.GetExtension(spec.OutputPath)}");
+
+                        new NUnit2XmlResultWriter().WriteResultFile(outputPath, $"{v2OutputPath}");
+                        ColorConsole.WriteLine(ColorStyle.Default, $"Results with v2 format saved as {v2OutputPath}");
                     }
                 }
                 catch (Exception ex)
