@@ -428,6 +428,10 @@ namespace NUnit.Runner
                         new NUnit2XmlResultWriter().WriteResultFile(outputPath, $"{v2OutputPath}");
                         ColorConsole.WriteLine(ColorStyle.Default, $"Results with v2 format saved as {v2OutputPath}");
                     }
+                    else if (!"NUNIT3".Equals(spec.Format.ToUpperInvariant()))
+                    {
+                        ColorConsole.WriteLine(ColorStyle.Error, $"'{spec.Format}' format is not supported.");
+                    }
                 }
                 catch (Exception ex)
                 {
