@@ -24,7 +24,8 @@
 
   "dependencies": {
     "Microsoft.Extensions.Testing.Abstractions": "1.0.0-preview2-003121",
-    "Microsoft.Extensions.DependencyModel": "1.0.0",
+    "Microsoft.DotNet.PlatformAbstractions": "1.1.0",
+    "Microsoft.Extensions.DependencyModel": "1.1.0",
     "NUnit.Portable.Agent": "3.4.0-beta-3",
     "NUnit.Result.Writer.V2": "1.0.0"
   },
