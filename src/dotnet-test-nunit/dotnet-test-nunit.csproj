@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>NUnit console and Visual Studio runner for .NET Core, netstandard 1.3+ and .NET 4.51+</Description>
+    <Copyright>Copyright (C) 2016 Charlie Poole</Copyright>
+    <AssemblyTitle>NUnit .NET Core Runner</AssemblyTitle>
+    <VersionPrefix>3.3.0-CI</VersionPrefix>
+    <Authors>Rob Prouse</Authors>
+    <TargetFrameworks>netcoreapp1.0;net46;net451</TargetFrameworks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>dotnet-test-nunit</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>dotnet-test-nunit</PackageId>
+    <PackageTags>testing;tdd;dotnet;core;nunit</PackageTags>
+    <PackageIconUrl>https://cdn.rawgit.com/nunit/resources/master/images/icon/nunit_256.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/nunit/dotnet-test-nunit</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/nunit/dotnet-test-nunit</RepositoryUrl>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">1.0.4</RuntimeFrameworkVersion>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <RootNamespace>NUnit.Runner</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit.Portable.Agent" Version="3.4.0-beta-3" />
+	<PackageReference Include="NUnit.Result.Writer.V2" Version="1.0.0" />
+  </ItemGroup>
+
+</Project>

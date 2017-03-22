@@ -27,10 +27,10 @@ using System.Text;
 
 namespace NUnit.Runner
 {
-    public class ColorConsoleWriter
+    public class ColorConsoleWriter: IConsole
     {
-        bool _colorEnabled;
-        TextWriter _writer;
+        readonly bool _colorEnabled;
+        readonly TextWriter _writer;
 
         /// <summary>
         /// Construct a ColorConsoleWriter.
@@ -48,6 +48,7 @@ namespace NUnit.Runner
         }
 
         #region Extended Methods
+
         /// <summary>
         /// Writes the value with the specified style.
         /// </summary>
@@ -81,32 +82,12 @@ namespace NUnit.Runner
         }
 
         /// <summary>
-        /// Writes the label and the option that goes with it.
-        /// </summary>
-        /// <param name="label">The label.</param>
-        /// <param name="option">The option.</param>
-        public void WriteLabel(string label, object option)
-        {
-            WriteLabel(label, option, ColorStyle.Value);
-        }
-
-        /// <summary>
-        /// Writes the label and the option that goes with it followed by a new line.
-        /// </summary>
-        /// <param name="label">The label.</param>
-        /// <param name="option">The option.</param>
-        public void WriteLabelLine(string label, object option)
-        {
-            WriteLabelLine(label, option, ColorStyle.Value);
-        }
-
-        /// <summary>
         /// Writes the label and the option that goes with it and optionally writes a new line.
         /// </summary>
         /// <param name="label">The label.</param>
         /// <param name="option">The option.</param>
         /// <param name="valueStyle">The color to display the value with</param>
-        public void WriteLabel(string label, object option, ColorStyle valueStyle)
+        public void WriteLabel(string label, object option, ColorStyle valueStyle = ColorStyle.Value)
         {
             Write(ColorStyle.Label, label);
             Write(valueStyle, option.ToString());
@@ -118,7 +99,7 @@ namespace NUnit.Runner
         /// <param name="label">The label.</param>
         /// <param name="option">The option.</param>
         /// <param name="valueStyle">The color to display the value with</param>
-        public void WriteLabelLine(string label, object option, ColorStyle valueStyle)
+        public void WriteLabelLine(string label, object option, ColorStyle valueStyle = ColorStyle.Value)
         {
             WriteLabel(label, option, valueStyle);
             _writer.WriteLine();
@@ -141,19 +122,18 @@ namespace NUnit.Runner
         }
 
         /// <summary>
-        /// Writes a NewLine
-        /// </summary>
-        public void WriteLine()
-        {
-            _writer.WriteLine();
-        }
-
-        /// <summary>
         /// Write a string value followed by a NewLine
         /// </summary>
-        public void WriteLine(string value)
+        public void WriteLine(string text = null)
         {
-            _writer.WriteLine(value);
+            if (string.IsNullOrEmpty(text))
+            {
+                _writer.WriteLine(text);
+            }
+            else
+            {
+                _writer.WriteLine(text);
+            }
         }
 
         /// <summary>

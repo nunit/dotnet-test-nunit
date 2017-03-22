@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>    
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="NUnit" Version="3.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit.Portable.Agent" Version="3.4.0-beta-3" />
+	<PackageReference Include="NUnit.Result.Writer.V2" Version="1.0.0" />
+    <ProjectReference Include="..\..\src\dotnet-test-nunit\dotnet-test-nunit.csproj" />
+    <ProjectReference Include="..\..\src\dotnet-test-nunit-adapter\dotnet-test-nunit-adapter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+</Project>

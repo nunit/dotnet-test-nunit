@@ -30,13 +30,13 @@ namespace NUnit.Runner
 {
     public class ResultReporter
     {
-        ColorConsoleWriter _writer;
+        IConsole _writer;
         CommandLineOptions _options;
         XElement _result;
         int _reportIndex = 0;
         string _overallResult;
 
-        public ResultReporter(ResultSummary summary, ColorConsoleWriter writer, CommandLineOptions options)
+        public ResultReporter(ResultSummary summary, IConsole writer, CommandLineOptions options)
         {
             _writer = writer;
             _options = options;
