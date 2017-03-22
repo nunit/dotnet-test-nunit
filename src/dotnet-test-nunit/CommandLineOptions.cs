@@ -97,7 +97,7 @@ namespace NUnit.Runner
 
         public bool TeamCity { get; private set; }
 
-#if NET451
+#if NET451 || NET46
         public bool Debug { get; private set; }
 #endif
 

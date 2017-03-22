@@ -12,18 +12,21 @@ before_build:
   - ps: .\scripts\show-dotnet-info.ps1
   - ps: .\scripts\set-version.ps1
   - cmd: dotnet --info
-  - cmd: dotnet restore
+  - cmd: dotnet restore --packages packages
 
 build_script:
   - cmd: dotnet build -c Release test\dotnet-test-nunit.test.runner\
+  - cmd: dotnet build -c Release src\dotnet-test-nunit-adapter\
 
 test_script:
   - cmd: dotnet run -c Release -p test\dotnet-test-nunit.test.runner\
 
 after_test:
   - cmd: dotnet pack -c Release src\dotnet-test-nunit\
+  - cmd: dotnet pack -c Release src\dotnet-test-nunit-adapter\ /p:NuspecFile=package.nuspec
+  - cmd: xcopy src\dotnet-test-nunit-adapter\bin\Release\*.nupkg src\dotnet-test-nunit\bin\Release /R /Q /Y
 
 test: off
 
 artifacts:
-  path: 'src\dotnet-test-nunit\bin\Release\*.nupkg'
+  - path: 'src\dotnet-test-nunit\bin\Release\*.nupkg'

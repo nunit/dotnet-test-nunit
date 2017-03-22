@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Copyright>Copyright (C) 2016 Charlie Poole</Copyright>
+    <AssemblyTitle>NUnit .NET Core Runner Test Runner</AssemblyTitle>
+    <VersionPrefix>3.4.0</VersionPrefix>
+    <Authors>Rob Prouse</Authors>
+    <TargetFrameworks>netcoreapp1.0;net46</TargetFrameworks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>dotnet-test-nunit.test.runner</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>dotnet-test-nunit.test.runner</PackageId>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dotnet5.6</PackageTargetFallback>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">1.0.4</RuntimeFrameworkVersion>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\dotnet-test-nunit\dotnet-test-nunit.csproj" />
+    <ProjectReference Include="..\dotnet-test-nunit.test\dotnet-test-nunit.test.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnitLite" Version="3.6.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
+    <PackageReference Include="System.IO.FileSystem" Version="4.0.1" />
+    <PackageReference Include="System.Console" Version="4.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>

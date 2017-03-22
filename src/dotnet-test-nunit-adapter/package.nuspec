@@ -1,0 +1,36 @@
+﻿<?xml version="1.0"?>
+
+<package>
+  <metadata>
+    <id>nunit.TestAdapter</id>
+    <title>NUnit Visual Studio Test Adapter</title>
+    <version>3.3.0-CI</version>
+    <language>en-us</language>
+    <authors>NikolayP</authors>
+    <owners>Charlie Poole</owners>
+	<copyright>Copyright (C) 2016 Charlie Poole</copyright>
+    <licenseUrl>https://raw.githubusercontent.com/nunit/dotnet-test-nunit/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/nunit/dotnet-test-nunit</projectUrl>
+    <iconUrl>https://cdn.rawgit.com/nunit/resources/master/images/icon/nunit_256.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>NUnit console and Visual Studio test adapter</description>
+    <tags>testing;tdd;dotnet;nunit</tags>
+  </metadata>
+  <files>
+	<file src="bin\Release\netcoreapp1.0\dotnet-test-nunit.TestAdapter.dll" target="build\_common" />
+	<file src="bin\Release\netcoreapp1.0\dotnet-test-nunit.dll" target="build\_common" />
+
+	<file src="..\..\packages\nunit.portable.agent\*\lib\netstandard1.3\NUnit.Portable.Agent.dll" target="build\_common" />
+	<file src="..\..\packages\nunit.result.writer.v2\*\lib\netcoreapp1.0\NUnit.Result.Writer.V2.dll" target="build\_common" />
+	<file src="..\..\packages\microsoft.extensions.testing.abstractions\*\lib\netstandard1.6\Microsoft.Extensions.Testing.Abstractions.dll" target="build\_common" />
+	<file src="..\..\packages\microsoft.dotnet.projectmodel\*\lib\netstandard1.6\Microsoft.DotNet.ProjectModel.dll" target="build\_common" />
+	<file src="..\..\packages\microsoft.dotnet.internalabstractions\*\lib\netstandard1.3\Microsoft.DotNet.InternalAbstractions.dll" target="build\_common" />
+
+	<file src="nunit.TestAdapter.props" target="build\net20" />
+	<file src="nunit.TestAdapter.props" target="build\portable-net45+win8+wpa81+wp8" />
+	<file src="nunit.TestAdapter.props" target="build\netcore1.0" />
+	<file src="nunit.TestAdapter.props" target="build\netcoreapp1.0" />
+	<file src="nunit.TestAdapter.props" target="build\uap" />
+	<file src="nunit.TestAdapter.props" target="build\netstandard1.0" />
+  </files>
+</package>

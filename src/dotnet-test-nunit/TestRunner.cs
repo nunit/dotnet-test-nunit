@@ -30,7 +30,6 @@ using NUnit.Runner.Interfaces;
 using NUnit.Runner.Sinks;
 using NUnit.Runner.TestListeners;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -41,23 +40,28 @@ using System;
 
 namespace NUnit.Runner
 {
-    using NUnit.Engine.Listeners;
+    using Engine.Listeners;
     using Result.Writer.V2;
 
     public class TestRunner : IDisposable
     {
         CommandLineOptions _options;
-        Lazy<ColorConsoleWriter> _console;
-        ColorConsoleWriter ColorConsole => _console.Value;
+        Lazy<IConsole> _console;
+        IConsole ColorConsole => _console.Value;
 
         ITestDiscoverySink _testDiscoverySink;
         ITestExecutionSink _testExecutionSink;
         Socket _socket;
         string _workDirectory;
 
-        public TestRunner()
+        public TestRunner(
+            IConsole console = null,
+            ITestDiscoverySink testDiscoverySink = null,
+            ITestExecutionSink testExecutionSink = null)
         {
-            _console = new Lazy<ColorConsoleWriter>(() => new ColorConsoleWriter(!_options.NoColor));
+            _testDiscoverySink = testDiscoverySink;
+            _testExecutionSink = testExecutionSink;
+            _console = new Lazy<IConsole>(() => console ?? new ColorConsoleWriter(!_options.NoColor));
         }
 
         public int Run(string[] args)
@@ -74,9 +78,9 @@ namespace NUnit.Runner
                 return ReturnCodes.INVALID_ARG;
             }
 
-#if NET451
+#if NET451 || NET46
             if (_options.Debug)
-                Debugger.Launch();
+                System.Diagnostics.Debugger.Launch();
 #endif
 
             if (_options.ShowVersion || !_options.NoHeader)
@@ -478,13 +482,14 @@ namespace NUnit.Runner
         void SetupRemoteTestSinks(Stream stream)
         {
             var binaryWriter = new BinaryWriter(stream);
-            _testDiscoverySink = new RemoteTestDiscoverySink(binaryWriter);
-            _testExecutionSink = new RemoteTestExecutionSink(binaryWriter);
+            _testDiscoverySink = _testDiscoverySink ?? new RemoteTestDiscoverySink(binaryWriter);
+            _testExecutionSink = _testExecutionSink ?? new RemoteTestExecutionSink(binaryWriter);
         }
+
         void SetupConsoleTestSinks()
         {
-            _testDiscoverySink = new StreamingTestDiscoverySink(Console.OpenStandardOutput());
-            _testExecutionSink = new StreamingTestExecutionSink(Console.OpenStandardOutput());
+            _testDiscoverySink = _testDiscoverySink ?? new StreamingTestDiscoverySink(Console.OpenStandardOutput());
+            _testExecutionSink = _testExecutionSink ?? new StreamingTestExecutionSink(Console.OpenStandardOutput());
         }
 
         #endregion
