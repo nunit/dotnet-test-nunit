@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("NUnit Software")]
 [assembly: AssemblyProduct("dotnet_test_nunit.test")]
-[assembly: AssemblyCopyright("Copyright (C) 2016 Charlie Poole")]
+[assembly: AssemblyCopyright("Copyright (C) 2016 NUnit Project")]
 [assembly: AssemblyTrademark("NUnit is a trademark of NUnit Software")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

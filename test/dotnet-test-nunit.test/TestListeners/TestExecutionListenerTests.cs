@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Copyright (c) 2016 Charlie Poole
+// Copyright (c) 2016 NUnit Project
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -117,7 +117,7 @@ namespace NUnit.Runner.Test.TestListeners
             _listener.TestFinished += eventHandler;
 
             _listener.OnTestEvent(SUCCESS_TEST_CASE_XML);
-            
+
             var testResult = _sink.TestResult;
             Assert.That(testResult, Is.Not.Null);
             Assert.That(testResult.ErrorMessage, Is.Null.Or.Empty);
@@ -280,7 +280,7 @@ namespace NUnit.Runner.Test.TestListeners
 
         [Test]
         public void TestStarted()
-        {            
+        {
             bool raised = false;
 
             var eventHandler =

@@ -1,5 +1,5 @@
 {
-  "copyright": "Copyright (C) 2016 Charlie Poole",
+  "copyright": "Copyright (C) 2016 NUnit Project",
   "authors": [ "Rob Prouse" ],
   "title": "NUnit .NET Core Runner",
   "description": "NUnit console and Visual Studio runner for .NET Core and .NET 4.5.1+",

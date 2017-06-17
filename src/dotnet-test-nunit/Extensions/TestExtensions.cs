@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Copyright (c) 2016 Charlie Poole
+// Copyright (c) 2016 NUnit Project
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -42,12 +42,12 @@ namespace NUnit.Runner.Extensions
         static SHA1 SHA { get; } = SHA1.Create();
 
         /// <summary>
-        /// Takes a string, signs it with a SHA1 algorithm and converts the 
-        /// resulting hash to a <see cref="Guid"/> 
+        /// Takes a string, signs it with a SHA1 algorithm and converts the
+        /// resulting hash to a <see cref="Guid"/>
         /// </summary>
         /// <remarks>
         /// <para>
-        /// The SHA1 hash algorithm results in a 140 bit digest, but a 
+        /// The SHA1 hash algorithm results in a 140 bit digest, but a
         /// Guid only stores 128 bits.  Therefore, we are tossing out
         /// the last 12 bits of the SHA1 hash in order to convert the
         /// result to a Guid.
