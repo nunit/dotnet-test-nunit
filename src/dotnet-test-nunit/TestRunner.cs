@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Copyright (c) 2016 Charlie Poole
+// Copyright (c) 2016 NUnit Project
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -256,7 +256,7 @@ namespace NUnit.Runner
             };
 
             listener.TestFinished += (sender, args) =>
-            {                
+            {
                 if (args.TestOutput != null)
                 {
                     if (labels == "ON")
@@ -497,7 +497,7 @@ namespace NUnit.Runner
             string versionText = executingAssembly.GetName().Version.ToString(3);
 
             string programName = "NUnit .NET Core Console Runner";
-            string copyrightText = "Copyright (C) 2016 Charlie Poole.\r\nAll Rights Reserved.";
+            string copyrightText = "Copyright (C) 2016 NUnit Project.\r\nAll Rights Reserved.";
             string configText = String.Empty;
 
             object[] attrs = executingAssembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);

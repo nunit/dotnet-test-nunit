@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Copyright (c) 2015 Charlie Poole
+// Copyright (c) 2015 NUnit Project
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -41,18 +41,18 @@ namespace NUnit.Engine.Listeners
 
         public string Value { get; private set; }
 
-        public string Name { get; private set; }        
+        public string Name { get; private set; }
 
         public static class Names
         {
-            public const string Name = "name";            
+            public const string Name = "name";
             public const string FlowId = "flowId";
             public const string Message = "message";
-            public const string Out = "out";            
+            public const string Out = "out";
             public const string TcTags = "tc:tags";
             public const string Parent = "parent";
             public const string CaptureStandardOutput = "captureStandardOutput";
-            public const string Duration = "duration";            
+            public const string Duration = "duration";
             public const string Details = "details";
         }
     }

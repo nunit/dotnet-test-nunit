@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Copyright (c) 2016 Charlie Poole
+// Copyright (c) 2016 NUnit Project
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -112,7 +112,7 @@ namespace NUnit.Runner.TestListeners
             if (testResult.Messages.Count > 0)
                 output = testResult.Messages[0];
             else if (testResult.Outcome != TestOutcome.None)
-                output = testResult.Outcome.ToString();            
+                output = testResult.Outcome.ToString();
 
             TestFinished?.Invoke(this, new TestEventArgs(testResult.Test.FullyQualifiedName, output));
 
