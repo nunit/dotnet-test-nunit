@@ -10,7 +10,7 @@ to run tests at the command line using `dotnet test`, in CI or in Visual Studio.
 For more information on how to test .NET Core, see the
 [.NET Core/.NET Standard documentation](https://github.com/nunit/docs/wiki/.NET-Core-and-.NET-Standard).
 
- If you are reporting **issues**, only report them here if you are using `dotnet-test-nunut` and `project.json`. Otherwise issues should be reported against the [NUnit 3 Visual Studio Test adapter](https://github.com/nunit/nunit3-vs-adapter).
+ If you are reporting **issues**, we are no longer making updates to this project or the use of `dotnet-test-nunit` and `project.json`. Issues should be reported against the [NUnit 3 Visual Studio Test adapter](https://github.com/nunit/nunit3-vs-adapter).
 
 
 [![Build status](https://ci.appveyor.com/api/projects/status/yg7dawcy1106g1li/branch/master?svg=true)](https://ci.appveyor.com/project/CharliePoole/dotnet-test-nunit/branch/master) [![Travis Build Status](https://travis-ci.org/nunit/dotnet-test-nunit.svg?branch=master)](https://travis-ci.org/nunit/dotnet-test-nunit)
